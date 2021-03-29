@@ -32,8 +32,11 @@
     "typo3-ter/fs-media-gallery": "self.version"
   },
   "extra": {
-      "branch-alias": {
-          "dev-master": "2.1.x-dev"
-      }
+    "branch-alias": {
+      "dev-master": "2.1.x-dev"
+    },
+    "typo3/cms": {
+      "extension-key": "fs_media_gallery"
+    }
   }
 }
