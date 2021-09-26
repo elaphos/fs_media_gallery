@@ -53,6 +53,7 @@ plugin.tx_fsmediagallery {
 				pagesBefore = 4
 				pagesAfter = 4
 				maximumNumberOfLinks = 9
+				class = GeorgRinger\NumberedPagination\NumberedPagination
 			}
 		}
 		# Settings for album view (list of images)
@@ -91,6 +92,7 @@ plugin.tx_fsmediagallery {
 				pagesBefore = 4
 				pagesAfter = 4
 				maximumNumberOfLinks = 9
+				class = GeorgRinger\NumberedPagination\NumberedPagination
 			}
 		}
 		# Settings for detail view
