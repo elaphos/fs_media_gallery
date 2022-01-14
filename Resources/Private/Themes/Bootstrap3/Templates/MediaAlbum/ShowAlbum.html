@@ -10,8 +10,8 @@
 			<f:then>
 			<div class="album">
 				<f:if condition="{settings.album.displayTitle}">
-                                    <h3>{mediaAlbum.title}</h3>
-                                </f:if>
+					<h3>{mediaAlbum.title}</h3>
+				</f:if>
 				<div class="description"><f:format.html>{mediaAlbum.webdescription}</f:format.html></div>
 				<f:render partial="AlbumPagination" contentAs="content" arguments="{pagination: mediaAlbumPagination, mediaAlbum: mediaAlbum}">
 					<f:if condition="{settings.album.lightbox.enable}">

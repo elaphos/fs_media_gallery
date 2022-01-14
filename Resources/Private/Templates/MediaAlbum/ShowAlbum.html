@@ -7,10 +7,11 @@
 	<f:section name="main">
 		<f:flashMessages />
 		<f:if condition="{mediaAlbum}">
+			<f:then>
 			<div class="album">
-                                <f:if condition="{settings.album.displayTitle}">
-                                    <h3>{mediaAlbum.title}</h3>
-                                </f:if>
+				<f:if condition="{settings.album.displayTitle}">
+					<h3>{mediaAlbum.title}</h3>
+				</f:if>
 				<div class="description"><f:format.html>{mediaAlbum.webdescription}</f:format.html></div>
 				<f:render partial="AlbumPagination" contentAs="content" arguments="{pagination: mediaAlbumPagination, mediaAlbum: mediaAlbum}">
 					<f:if condition="{settings.album.lightbox.enable}">
@@ -42,6 +43,10 @@
 			<f:if condition="{settings.album.lightbox.enable}">
 				<f:render partial="MediaAlbum/Lightbox" section="Lightbox" arguments="{mediaAlbum:mediaAlbum}" />
 			</f:if>
+			</f:then>
+			<f:else>
+				<f:translate key="no_album_found" />
+			</f:else>
 		</f:if>
 	</f:section>
 
