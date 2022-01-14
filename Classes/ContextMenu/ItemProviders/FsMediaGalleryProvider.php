@@ -146,7 +146,7 @@ class FsMediaGalleryProvider extends AbstractProvider
             'data-album-record-uid' => $itemInfo['uid'] ?? 0,
             'data-pid' => $itemInfo['pid'] ?? 0,
             'data-parent-uid' => $itemInfo['parentUid'] ?? 0,
-            'data-title' => $itemInfo['title'] ?? $this->folder->getName(),
+            'data-title' => $itemInfo['title'] ?? ucfirst(trim(str_replace('_', ' ', $this->folder->getName()))),
             'data-storage' => $this->folder->getStorage()->getUid(),
             'data-folder' => $this->folder->getIdentifier(),
         ];
