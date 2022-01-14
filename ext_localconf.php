@@ -28,9 +28,6 @@ $boot = function ($packageKey) {
     $GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] =
         \MiniFranske\FsMediaGallery\Hooks\ProcessDatamapHook::class;
 
-    // EXT:news >= 3.2.0 support
-    $GLOBALS['TYPO3_CONF_VARS']['EXT']['news']['classes']['Domain/Model/News'][] = $packageKey;
-
     // Page module hook
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info']['fsmediagallery_mediagallery']['fs_media_gallery'] =
         'MiniFranske\\FsMediaGallery\\Hooks\\PageLayoutView->getExtensionSummary';

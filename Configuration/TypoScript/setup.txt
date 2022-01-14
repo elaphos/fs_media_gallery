@@ -125,15 +125,3 @@ plugin.tx_fsmediagallery {
 # Include MediaGallery default styles
 page.includeCSS.tx-fs-media-gallery = EXT:fs_media_gallery/Resources/Public/Css/MediaAlbum.css
 
-# Setting for EXT:news
-plugin.tx_news {
-	settings {
-		detail {
-			fsmediaalbum {
-				targetPid = {$plugin.tx_fsmediagallery.settings.targetPid}
-				# Thumbnail view
-				thumb < plugin.tx_fsmediagallery.settings.random.thumb
-			}
-		}
-	}
-}

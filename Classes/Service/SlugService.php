@@ -121,7 +121,7 @@ class SlugService
             ->getQueryBuilderForTable('tx_realurl_uniqalias');
         $schemaManager = $queryBuilder->getConnection()->getSchemaManager();
         if ($schemaManager->tablesExist(['tx_realurl_uniqalias']) === true) {
-            // Count valid aliases for news
+            // Count valid aliases
             $queryBuilder->getRestrictions()->removeAll();
             $elementCount = $queryBuilder->selectLiteral('COUNT(DISTINCT ' . $this->tableName . '.uid)')
                 ->from('tx_realurl_uniqalias')
@@ -169,7 +169,7 @@ class SlugService
     }
 
     /**
-     * Perform migration of EXT:realurl unique alias into empty news slugs
+     * Perform migration of EXT:realurl unique alias into fs_media_gallery slugs
      *
      * @return array
      */

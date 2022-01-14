@@ -29,8 +29,8 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
  * to migrate the unique aliases from realurl to be sure that the same alias is used
  *
  * Requires existence of DB table tx_realurl_uniqalias, but EXT:realurl requires not to be installed
- * Will only appear if missing slugs found between realurl and news, respecting language and expire date from realurl
- * Copies values from 'tx_realurl_uniqalias.value_alias' to 'tx_news_domain_model_news.path_segment'
+ * Will only appear if missing slugs found between realurl and fs_media_gallery, respecting language and expire date from realurl
+ * Converts title into slug
  */
 class PopulateMedialAlbumsSlug implements UpgradeWizardInterface
 {
