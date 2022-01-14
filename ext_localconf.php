@@ -3,11 +3,6 @@ defined('TYPO3_MODE') || die();
 
 $boot = function ($packageKey) {
 
-    $conf = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-        \TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class
-    )->get($packageKey);
-
-
     \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
         'MiniFranske.' . $packageKey,
         'Mediagallery',
@@ -39,115 +34,6 @@ $boot = function ($packageKey) {
     // Page module hook
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info']['fsmediagallery_mediagallery']['fs_media_gallery'] =
         'MiniFranske\\FsMediaGallery\\Hooks\\PageLayoutView->getExtensionSummary';
-//
-//    $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
-//    $signalSlotDispatcher->connect(
-//        \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-//        \TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PreFolderMove,
-//        \MiniFranske\FsMediaGallery\Hooks\FolderChangedSlot::class,
-//        'preFolderMove'
-//    );
-//    $signalSlotDispatcher->connect(
-//        \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-//        \TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PostFolderMove,
-//        \MiniFranske\FsMediaGallery\Hooks\FolderChangedSlot::class,
-//        'postFolderMove'
-//    );
-//    $signalSlotDispatcher->connect(
-//        \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-//        \TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PreFolderDelete,
-//        \MiniFranske\FsMediaGallery\Hooks\FolderChangedSlot::class,
-//        'preFolderDelete'
-//    );
-//    $signalSlotDispatcher->connect(
-//        \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-//        \TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PostFolderDelete,
-//        \MiniFranske\FsMediaGallery\Hooks\FolderChangedSlot::class,
-//        'postFolderDelete'
-//    );
-//    $signalSlotDispatcher->connect(
-//        \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-//        \TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PreFolderRename,
-//        \MiniFranske\FsMediaGallery\Hooks\FolderChangedSlot::class,
-//        'preFolderRename'
-//    );
-//    $signalSlotDispatcher->connect(
-//        \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-//        \TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PostFolderRename,
-//        \MiniFranske\FsMediaGallery\Hooks\FolderChangedSlot::class,
-//        'postFolderRename'
-//    );
-//
-//    // *** Register file signals to clear the cache when enabled in extension setteings ***
-//    if (!empty($conf['clearCacheAfterFileChange']) && $conf['clearCacheAfterFileChange']) {
-//
-//        $signalSlotDispatcher->connect(
-//            \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-//            \TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PostFileAdd,
-//            \MiniFranske\FsMediaGallery\Hooks\FileChangedSlot::class,
-//            'postFileAdd'
-//        );
-//
-//        $signalSlotDispatcher->connect(
-//            \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-//            \TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PostFileCreate,
-//            \MiniFranske\FsMediaGallery\Hooks\FileChangedSlot::class,
-//            'postFileCreate'
-//        );
-//
-//        $signalSlotDispatcher->connect(
-//            \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-//            \TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PostFileCopy,
-//            \MiniFranske\FsMediaGallery\Hooks\FileChangedSlot::class,
-//            'postFileCopy'
-//        );
-//
-//        $signalSlotDispatcher->connect(
-//            \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-//            \TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PostFileMove,
-//            \MiniFranske\FsMediaGallery\Hooks\FileChangedSlot::class,
-//            'postFileMove'
-//        );
-//
-//        $signalSlotDispatcher->connect(
-//            \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-//            \TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PostFileDelete,
-//            \MiniFranske\FsMediaGallery\Hooks\FileChangedSlot::class,
-//            'postFileDelete'
-//        );
-//
-//        $signalSlotDispatcher->connect(
-//            \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-//            \TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PostFileRename,
-//            \MiniFranske\FsMediaGallery\Hooks\FileChangedSlot::class,
-//            'postFileRename'
-//        );
-//
-//        $signalSlotDispatcher->connect(
-//            \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-//            \TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PostFileReplace,
-//            \MiniFranske\FsMediaGallery\Hooks\FileChangedSlot::class,
-//            'postFileReplace'
-//        );
-//    }
-//
-//
-//    if (!empty($conf['enableAutoCreateFileCollection']) && $conf['enableAutoCreateFileCollection']) {
-//        $signalSlotDispatcher->connect(
-//            \TYPO3\CMS\Core\Resource\ResourceStorage::class,
-//            \TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PostFolderAdd,
-//            \MiniFranske\FsMediaGallery\Hooks\FolderChangedSlot::class,
-//            'postFolderAdd'
-//        );
-//    }
-
-//    // File tree icon adjustments
-//    $signalSlotDispatcher->connect(
-//        \TYPO3\CMS\Core\Imaging\IconFactory::class,
-//        'buildIconForResourceSignal',
-//        \MiniFranske\FsMediaGallery\Hooks\IconFactory::class,
-//        'buildIconForResource'
-//    );
 
     if (TYPO3_MODE === 'BE') {
         $GLOBALS['TYPO3_CONF_VARS']['BE']['ContextMenu']['ItemProviders'][1547740001] = \MiniFranske\FsMediaGallery\ContextMenu\ItemProviders\FsMediaGalleryProvider::class;
