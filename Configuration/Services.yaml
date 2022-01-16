@@ -53,10 +53,6 @@ services:
         event: TYPO3\CMS\Core\Resource\Event\BeforeFolderMovedEvent
       - name: event.listener
         identifier: 'album-change'
-        method: 'preFolderRename'
-        event: TYPO3\CMS\Core\Resource\Event\BeforeFolderRenamedEvent
-      - name: event.listener
-        identifier: 'album-change'
         method: 'postFolderAdd'
         event: TYPO3\CMS\Core\Resource\Event\AfterFolderAddedEvent
       - name: event.listener
@@ -67,7 +63,3 @@ services:
         identifier: 'album-change'
         method: 'postFolderMove'
         event: TYPO3\CMS\Core\Resource\Event\AfterFolderMovedEvent
-      - name: event.listener
-        identifier: 'album-change'
-        method: 'postFolderRename'
-        event: TYPO3\CMS\Core\Resource\Event\AfterFolderRenamedEvent

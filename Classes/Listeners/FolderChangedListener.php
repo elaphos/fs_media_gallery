@@ -36,10 +36,8 @@ use TYPO3\CMS\Core\Resource\Event\AfterFileReplacedEvent;
 use TYPO3\CMS\Core\Resource\Event\AfterFolderAddedEvent;
 use TYPO3\CMS\Core\Resource\Event\AfterFolderDeletedEvent;
 use TYPO3\CMS\Core\Resource\Event\AfterFolderMovedEvent;
-use TYPO3\CMS\Core\Resource\Event\AfterFolderRenamedEvent;
 use TYPO3\CMS\Core\Resource\Event\BeforeFolderDeletedEvent;
 use TYPO3\CMS\Core\Resource\Event\BeforeFolderMovedEvent;
-use TYPO3\CMS\Core\Resource\Event\BeforeFolderRenamedEvent;
 use MiniFranske\FsMediaGallery\Service\Utility;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\FolderInterface;
@@ -129,48 +127,6 @@ final class FolderChangedListener
             $this->utilityService->deleteFolderRecord($storageUid, $folderInfo[1]);
         }
         $this->utilityService->clearMediaGalleryPageCache($folder);
-    }
-
-    /**
-     * Get sub folder structure of folder before is gets renamed
-     * Is needed to update sys_file_collection records when renaming was successful
-     */
-    public function preFolderRename(BeforeFolderRenamedEvent $event): void
-    {
-        $folder = $event->getFolder();
-        $this->folderMapping[$folder->getCombinedIdentifier()] = $this->getSubFolderIdentifiers($folder);
-    }
-
-    /**
-     * Update sys_file_collection records when a folder is renamed
-     */
-    public function postFolderRename(AfterFolderRenamedEvent $event): void
-    {
-        $folder = $event->getFolder();
-        $newName = $folder->getName();
-        $newFolder = $folder->getParentFolder()->getSubfolder($newName);
-        $oldStorageUid = $folder->getStorage()->getUid();
-        $newStorageUid = $newFolder->getStorage()->getUid();
-
-        $this->utilityService->updateFolderRecord(
-            $oldStorageUid,
-            $folder->getIdentifier(),
-            $newStorageUid,
-            $newFolder->getIdentifier()
-        );
-
-        if (!empty($this->folderMapping[$folder->getCombinedIdentifier()])) {
-            $newMapping = $this->getSubFolderIdentifiers($newFolder);
-            foreach ($this->folderMapping[$folder->getCombinedIdentifier()] as $key => $folderInfo) {
-                $this->utilityService->updateFolderRecord(
-                    $oldStorageUid,
-                    $folderInfo[1],
-                    $newStorageUid,
-                    $newMapping[$key][1]
-                );
-            }
-            $this->utilityService->clearMediaGalleryPageCache($folder);
-        }
     }
 
     /**
