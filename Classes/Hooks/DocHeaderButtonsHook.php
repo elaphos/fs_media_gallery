@@ -33,7 +33,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class DocHeaderButtonsHook extends AbstractBeAlbumButtons
 {
-
     /**
      * Create button
      *
@@ -63,10 +62,13 @@ class DocHeaderButtonsHook extends AbstractBeAlbumButtons
     public function moduleTemplateDocHeaderGetButtons($params, ButtonBar $buttonBar)
     {
         $buttons = $params['buttons'];
-
-        if (GeneralUtility::_GP('M') === 'file_FilelistList' || GeneralUtility::_GP('route') === '/file/FilelistList/') {
+        if (GeneralUtility::_GP('M') === 'file_FilelistList'
+            || GeneralUtility::_GP('route') === '/file/FilelistList/'
+            || GeneralUtility::_GP('route') === '/module/file/FilelistList'
+        ) {
             foreach ($this->generateButtons(GeneralUtility::_GP('id')) as $buttonInfo) {
                 $button = $buttonBar->makeLinkButton();
+                $button->setShowLabelText(true);
                 $button->setIcon($buttonInfo['icon']);
                 $button->setTitle($buttonInfo['title']);
                 if (strpos($buttonInfo['url'], 'alert') === 0) {
