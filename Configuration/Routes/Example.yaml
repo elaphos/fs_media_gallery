@@ -9,7 +9,7 @@ routeEnhancers:
     - routePath: '/{page}'
       _controller: 'MediaAlbum::nestedList'
       _arguments:
-        page: '@widget_album/currentPage'
+        page: 'currentAlbumPage'
     - routePath: '/album/{media_album}'
       _controller: 'MediaAlbum::nestedList'
       _arguments:
@@ -18,7 +18,7 @@ routeEnhancers:
       _controller: 'MediaAlbum::nestedList'
       _arguments:
         media_album: mediaAlbum
-        page: '@widget_album/currentPage'
+        page: 'currentPage'
     defaultController: 'MediaAlbum::nestedList'
     aspects:
       media_album:
