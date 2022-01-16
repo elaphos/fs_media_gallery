@@ -86,11 +86,21 @@ final class FolderChangedListener
         $oldStorageUid = $event->getFolder()->getStorage()->getUid();
         $newStorageUid = $newFolder->getStorage()->getUid();
 
+        $newParentId = null;
+        // If this is a subFolder find new parent album
+        if ($newFolder->getParentFolder() !== $newFolder) {
+            $newParentId = $this->utilityService->findFileCollectionRecordsForFolder(
+                    $newStorageUid,
+                    $event->getFolder()->getParentFolder()->getIdentifier()
+                )[0]['parentalbum'] ?? null;
+        }
+
         $this->utilityService->updateFolderRecord(
             $oldStorageUid,
             $event->getFolder()->getIdentifier(),
             $newStorageUid,
-            $newFolder->getIdentifier()
+            $newFolder->getIdentifier(),
+            $newParentId
         );
 
         if (!empty($this->folderMapping[$event->getFolder()->getCombinedIdentifier()])) {
@@ -197,7 +207,7 @@ final class FolderChangedListener
 
     public function postFileReplace(AfterFileReplacedEvent $event): void
     {
-            $this->utilityService->clearMediaGalleryPageCache($event->getFile()->getParentFolder());
+        $this->utilityService->clearMediaGalleryPageCache($event->getFile()->getParentFolder());
     }
 
     private function clearMediaGalleryPageCache(FolderInterface $folder): void

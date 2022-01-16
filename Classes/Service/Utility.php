@@ -1,4 +1,5 @@
 <?php
+
 namespace MiniFranske\FsMediaGallery\Service;
 
 /***************************************************************
@@ -142,20 +143,21 @@ class Utility implements SingletonInterface
 
     /**
      * Update file_collection record after move/rename folder
-     *
-     * @param int $oldStorageUid
-     * @param string $oldIdentifier
-     * @param int $newStorageUid
-     * @param string $newIdentifier
      */
-    public function updateFolderRecord($oldStorageUid, $oldIdentifier, $newStorageUid, $newIdentifier)
+    public function updateFolderRecord(int $oldStorageUid, string $oldIdentifier, int $newStorageUid, string $newIdentifier, ?int $newParentAlbum = 0): void
     {
+        $updatedData = [
+            'storage' => $newStorageUid,
+            'folder' => $newIdentifier
+        ];
+
+        if ($newParentAlbum !== null) {
+            $updatedData['parentalbum'] = $newParentAlbum;
+        }
+
         $this->getDatabaseConnection()->update(
             'sys_file_collection',
-            [
-                'storage' => $newStorageUid,
-                'folder' => $newIdentifier
-            ],
+            $updatedData,
             [
                 'storage' => (int)$oldStorageUid,
                 'folder' => $oldIdentifier,
@@ -171,11 +173,11 @@ class Utility implements SingletonInterface
      */
     public function deleteFolderRecord($storageUid, $identifier)
     {
-       $this->getDatabaseConnection()->update(
-           'sys_file_collection',
-           ['deleted' => 1],
-           ['folder' => $identifier, 'storage' => $storageUid]
-       );
+        $this->getDatabaseConnection()->update(
+            'sys_file_collection',
+            ['deleted' => 1],
+            ['folder' => $identifier, 'storage' => $storageUid]
+        );
     }
 
     /**
@@ -232,7 +234,7 @@ class Utility implements SingletonInterface
             ->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
 
-        $q->select('uid', 'pid', 'title', 'type', 'hidden')
+        $q->select('uid', 'pid', 'title', 'type', 'hidden', 'parentalbum')
             ->from('sys_file_collection')
             ->where(
                 $q->expr()->andX(
