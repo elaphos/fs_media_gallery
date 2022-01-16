@@ -59,7 +59,13 @@ class DocHeaderButtonsHook extends AbstractBeAlbumButtons
                 $button->setIcon($buttonInfo['icon']);
                 $button->setTitle($buttonInfo['title']);
                 if (strpos($buttonInfo['url'], 'alert') === 0) {
-                    $button->setOnClick($buttonInfo['url'] . ';return false;');
+                    // using CSS class to trigger confirmation in modal box
+                    $button->setClasses('t3js-modal-trigger')
+                        ->setDataAttributes([
+                            'severity' => 'warning',
+                            'title' => $buttonInfo['title'],
+                            'bs-content' => htmlspecialchars(substr($buttonInfo['url'], 6)),
+                        ]);
                 } else {
                     $button->setHref($buttonInfo['url']);
                 }

@@ -5,6 +5,7 @@ namespace MiniFranske\FsMediaGallery\ContextMenu\ItemProviders;
 use MiniFranske\FsMediaGallery\Service\Utility;
 use TYPO3\CMS\Backend\ContextMenu\ItemProviders\AbstractProvider;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -44,7 +45,7 @@ class FsMediaGalleryProvider extends AbstractProvider
         if ($resource instanceof Folder
             && in_array(
                 $resource->getRole(),
-                [Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD],
+                [FolderInterface::ROLE_DEFAULT, FolderInterface::ROLE_USERUPLOAD],
                 true
             )
         ) {

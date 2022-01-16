@@ -26,13 +26,13 @@ namespace MiniFranske\FsMediaGallery\Service;
  ***************************************************************/
 
 use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Resource\Folder;
-use MiniFranske\FsMediaGallery\Utility\StringUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -57,13 +57,13 @@ abstract class AbstractBeAlbumButtons
             $folder = null;
         }
 
-        if ($folder && $folder instanceof Folder &&
+        if ($folder instanceof Folder &&
             in_array(
                 $folder->getRole(),
-                [Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD]
+                [FolderInterface::ROLE_DEFAULT, FolderInterface::ROLE_USERUPLOAD]
             )
         ) {
-            /** @var \MiniFranske\FsMediaGallery\Service\Utility $utility */
+            /** @var Utility $utility */
             $utility = GeneralUtility::makeInstance(Utility::class);
             $mediaFolders = $utility->getStorageFolders();
 
@@ -118,7 +118,7 @@ abstract class AbstractBeAlbumButtons
                     $this->sL('module.buttons.createAlbum'),
                     $this->sL('module.buttons.createAlbum'),
                     $this->getIcon('add-album'),
-                    'alert("' . StringUtility::slashJS($this->sL('module.alerts.firstCreateStorageFolder')) . '");',
+                    'alert:' . $this->sL('module.alerts.firstCreateStorageFolder'),
                     false
                 );
             }

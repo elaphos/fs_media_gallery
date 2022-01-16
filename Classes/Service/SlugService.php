@@ -51,7 +51,7 @@ class SlugService
                     $queryBuilder->expr()->isNull($this->slugFieldName)
                 )
             )
-            ->execute()->fetchColumn(0);
+            ->execute()->fetchOne();
 
         return $elementCount;
     }
@@ -85,7 +85,8 @@ class SlugService
                 )
             )
             ->execute();
-        while ($record = $statement->fetch()) {
+
+        while ($record = $statement->fetchAssociative()) {
             //Use the core slughelper which is also used in the BE form
             $slug = $slugHelper->generate($record, $record['pid']);
             /** @var QueryBuilder $queryBuilder */
@@ -163,7 +164,7 @@ class SlugService
                         )
                     )
                 )
-                ->execute()->fetchColumn(0);
+                ->execute()->fetchOne(0);
         }
         return $elementCount;
     }
@@ -235,7 +236,7 @@ class SlugService
                 ->execute();
 
             // Update entries
-            while ($record = $statement->fetch()) {
+            while ($record = $statement->fetchAssociative()) {
                 $slug = (string)$record['value_alias'];
                 $queryBuilder = $connection->createQueryBuilder();
                 $queryBuilder->update($this->tableName)

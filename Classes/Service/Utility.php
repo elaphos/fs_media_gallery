@@ -73,7 +73,7 @@ class Utility implements SingletonInterface
                 ->orderBy('title');
 
             $statement = $q->execute();
-            while ($row = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            while ($row = $statement->fetchAssociative()) {
                 if (BackendUtility::readPageAccess($row['uid'], $this->getBeUser()->getPagePermsClause(1))) {
                     $pages[$row['uid']] = $row['title'];
                 }
@@ -253,7 +253,7 @@ class Utility implements SingletonInterface
             );
         }
 
-        return $q->execute()->fetchAll();
+        return $q->execute()->fetchAllAssociative();
     }
 
     protected function getDatabaseConnection(string $table = 'sys_file_collection'): Connection

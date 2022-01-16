@@ -32,16 +32,14 @@ use MiniFranske\FsMediaGallery\Utility\TypoScriptUtility;
 use MiniFranske\FsMediaGallery\Domain\Repository\MediaAlbumRepository;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Pagination\ArrayPaginator;
-use TYPO3\CMS\Core\Pagination\PaginationInterface;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
+use TYPO3\CMS\Extbase\Http\ForwardResponse;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
 use TYPO3\CMS\Core\Http\ImmediateResponseException;
 use MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum;
-use MiniFranske\FsMediaGallery\Utility\PageUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -305,16 +303,15 @@ class MediaAlbumController extends ActionController
      * Show single Album (defined in FlexForm/TS) Action
      * As showAlbumAction() displays any album by the given param this function gets its value from TS/Felxform
      * This could be merged with showAlbumAction() if there is a way to determine which switchableControllerActions is defined in Felxform.
-     *
-     * @return void
      */
-    public function showAlbumByConfigAction()
+    public function showAlbumByConfigAction(): ResponseInterface
     {
         // get all request arguments (e.g. pagination widget)
         $arguments = $this->request->getArguments();
         // set album id from settings
         $arguments['mediaAlbum'] = $this->settings['mediaAlbum'];
-        $this->forward('showAlbum', null, null, $arguments);
+
+        return (new ForwardResponse('showAlbum'))->withArguments($arguments);
     }
 
     /**

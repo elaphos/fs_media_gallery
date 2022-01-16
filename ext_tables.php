@@ -3,13 +3,11 @@ defined('TYPO3_MODE') || die();
 
 $boot = function ($packageKey) {
 
-    if (TYPO3_MODE === 'BE') {
-        // Add CSH
-        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr(
-            'tt_content.pi_flexform.fsmediagallery_mediagallery.list',
-            'EXT:' . $packageKey . '/Resources/Private/Language/locallang_csh_flexforms.xlf'
-        );
-    }
+    // Add CSH
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr(
+        'tt_content.pi_flexform.fsmediagallery_mediagallery.list',
+        'EXT:' . $packageKey . '/Resources/Private/Language/locallang_csh_flexforms.xlf'
+    );
 
     /** @var \TYPO3\CMS\Core\Imaging\IconRegistry $iconRegistry */
     $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
