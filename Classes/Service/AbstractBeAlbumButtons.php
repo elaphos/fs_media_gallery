@@ -25,13 +25,14 @@ namespace MiniFranske\FsMediaGallery\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Resource\Folder;
-use MiniFranske\FsMediaGallery\Utility\StringUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -40,14 +41,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 abstract class AbstractBeAlbumButtons
 {
-
     /**
      * Generate album add/edit buttons for click menu or toolbar
-     *
-     * @param string $combinedIdentifier
-     * @return array
      */
-    protected function generateButtons($combinedIdentifier)
+    protected function generateButtons(string $combinedIdentifier): array
     {
         $buttons = [];
 
@@ -60,13 +57,13 @@ abstract class AbstractBeAlbumButtons
             $folder = null;
         }
 
-        if ($folder && $folder instanceof Folder &&
+        if ($folder instanceof Folder &&
             in_array(
                 $folder->getRole(),
-                [Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD]
+                [FolderInterface::ROLE_DEFAULT, FolderInterface::ROLE_USERUPLOAD]
             )
         ) {
-            /** @var \MiniFranske\FsMediaGallery\Service\Utility $utility */
+            /** @var Utility $utility */
             $utility = GeneralUtility::makeInstance(Utility::class);
             $mediaFolders = $utility->getStorageFolders();
 
@@ -96,7 +93,7 @@ abstract class AbstractBeAlbumButtons
                         $parents = $utility->findFileCollectionRecordsForFolder(
                             $folder->getStorage()->getUid(),
                             $folder->getParentFolder()->getIdentifier(),
-                            $uid
+                            [$uid]
                         );
                         // if parent(s) found we take the first one
                         if (count($parents)) {
@@ -121,7 +118,7 @@ abstract class AbstractBeAlbumButtons
                     $this->sL('module.buttons.createAlbum'),
                     $this->sL('module.buttons.createAlbum'),
                     $this->getIcon('add-album'),
-                    'alert("' . StringUtility::slashJS($this->sL('module.alerts.firstCreateStorageFolder')) . '");',
+                    'alert:' . $this->sL('module.alerts.firstCreateStorageFolder'),
                     false
                 );
             }
@@ -129,18 +126,12 @@ abstract class AbstractBeAlbumButtons
         return $buttons;
     }
 
-    /**
-     * Build edit url
-     *
-     * @param int $uid Media album uid
-     * @return string
-     */
-    protected function buildEditUrl($uid)
+    protected function buildEditUrl(int $mediaAlbumUid): string
     {
         return GeneralUtility::makeInstance(UriBuilder::class)->buildUriFromRoute('record_edit', [
             'edit' => [
                 'sys_file_collection' => [
-                    $uid => 'edit'
+                    $mediaAlbumUid => 'edit'
                 ]
             ],
             'returnUrl' => GeneralUtility::getIndpEnv('REQUEST_URI')
@@ -149,13 +140,8 @@ abstract class AbstractBeAlbumButtons
 
     /**
      * Build Add new media album url
-     *
-     * @param int $pid
-     * @param int $parentAlbumUid
-     * @param Folder $folder
-     * @return string
      */
-    protected function buildAddUrl($pid, $parentAlbumUid, Folder $folder)
+    protected function buildAddUrl(int $pid, int $parentAlbumUid, Folder $folder): string
     {
         return GeneralUtility::makeInstance(UriBuilder::class)->buildUriFromRoute('record_edit', [
             'edit' => [
@@ -176,46 +162,23 @@ abstract class AbstractBeAlbumButtons
         ]);
     }
 
-    /**
-     * Create link/button
-     *
-     * @param string $title
-     * @param string $shortTitle
-     * @param string $icon
-     * @param string $url
-     * @param bool $addReturnUrl
-     * @return string
-     */
-    abstract protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true);
+    abstract protected function createLink(string $title, string $shortTitle, Icon $icon, string $url, bool $addReturnUrl = true): array;
 
-    /**
-     * @param string $name
-     * @return string|Icon
-     */
-    protected function getIcon($name)
+    protected function getIcon(string $name): Icon
     {
         $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-        $icon = $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
-
-        return $icon;
+        return $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
     }
 
-    /**
-     * @return \TYPO3\CMS\Core\Localization\LanguageService
-     */
-    protected function getLangService()
+    protected function getLangService(): LanguageService
     {
         return $GLOBALS['LANG'];
     }
 
     /**
      * Get language string
-     *
-     * @param string $key
-     * @param string $languageFile
-     * @return string
      */
-    protected function sL($key, $languageFile = 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf')
+    protected function sL(string $key, string $languageFile = 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf'): string
     {
         return $this->getLangService()->sL($languageFile . ':' . $key);
     }

@@ -5,6 +5,7 @@ namespace MiniFranske\FsMediaGallery\ContextMenu\ItemProviders;
 use MiniFranske\FsMediaGallery\Service\Utility;
 use TYPO3\CMS\Backend\ContextMenu\ItemProviders\AbstractProvider;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -44,7 +45,7 @@ class FsMediaGalleryProvider extends AbstractProvider
         if ($resource instanceof Folder
             && in_array(
                 $resource->getRole(),
-                [Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD],
+                [FolderInterface::ROLE_DEFAULT, FolderInterface::ROLE_USERUPLOAD],
                 true
             )
         ) {
@@ -104,7 +105,7 @@ class FsMediaGalleryProvider extends AbstractProvider
                     $parents = $utility->findFileCollectionRecordsForFolder(
                         $this->folder->getStorage()->getUid(),
                         $this->folder->getParentFolder()->getIdentifier(),
-                        $uid
+                        [$uid]
                     );
 
                     // If parent(s) found we take the first one
@@ -146,7 +147,7 @@ class FsMediaGalleryProvider extends AbstractProvider
             'data-album-record-uid' => $itemInfo['uid'] ?? 0,
             'data-pid' => $itemInfo['pid'] ?? 0,
             'data-parent-uid' => $itemInfo['parentUid'] ?? 0,
-            'data-title' => $itemInfo['title'] ?? $this->folder->getName(),
+            'data-title' => $itemInfo['title'] ?? ucfirst(trim(str_replace('_', ' ', $this->folder->getName()))),
             'data-storage' => $this->folder->getStorage()->getUid(),
             'data-folder' => $this->folder->getIdentifier(),
         ];

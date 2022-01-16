@@ -25,9 +25,6 @@
 			<trans-unit id="tx_fsmediagallery_domain_model_mediaalbum.main_asset.add">
 				<source>Add asset/image</source>
 			</trans-unit>
-			<trans-unit id="tx_news_domain_model_news.related_fsmediaalbums">
-				<source>Related Media Albums</source>
-			</trans-unit>
 		</body>
 	</file>
 </xliff>

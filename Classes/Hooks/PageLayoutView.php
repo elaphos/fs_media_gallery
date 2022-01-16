@@ -9,6 +9,7 @@ namespace MiniFranske\FsMediaGallery\Hooks;
 use TYPO3\CMS\Backend\Utility\BackendUtility as BackendUtilityCore;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\Connection;
 
@@ -17,35 +18,22 @@ use TYPO3\CMS\Core\Database\Connection;
  */
 class PageLayoutView
 {
-
     /**
-     * Path to the locallang file
-     *
      * @var string
      */
     const LLPATH = 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:';
 
     /**
-     * Table information
-     *
      * @var array
      */
-    public $tableData = [];
+    private $summaryData = [];
 
     /**
-     * FlexForm information
-     *
      * @var array
      */
-    public $flexFormData = [];
+    private $flexFormData = [];
 
-    /**
-     * Returns information about this extension's pi1 plugin
-     *
-     * @param array $params Parameters to the hook
-     * @return string Information about pi1 plugin
-     */
-    public function getExtensionSummary(array $params)
+    public function getExtensionSummary(array $params): string
     {
         /** @var \TYPO3\CMS\Backend\View\PageLayoutView $pageLayoutView */
         $pageLayoutView = $params['pObj'];
@@ -59,23 +47,18 @@ class PageLayoutView
         $result .= '<hr>';
 
         if (in_array($action, ['showAlbum', 'showAlbumByConfig'], true)) {
-            $this->getAlbumSelection();
+            $this->addSelectedAlbumToSettingsSummary();
         } else {
-            $this->getAlbumsSelection();
+            $this->addSelectedAlbumsToSettingsSummary();
         }
-        $this->getStartingPoint();
+        $this->addStartingPointToSettingsSummary();
 
         $result .= $this->renderSettingsAsTable();
 
         return $result;
     }
 
-    /**
-     * Get Action
-     *
-     * @return string
-     */
-    protected function getAction()
+    private function getAction(): string
     {
         // if flexForm data is found
         $actions = $this->getFieldFromFlexform('switchableControllerActions');
@@ -90,13 +73,7 @@ class PageLayoutView
         return $action;
     }
 
-    /**
-     * Get display mode
-     *
-     * @param string $action
-     * @return string
-     */
-    protected function getDisplayMode($action)
+    private function getDisplayMode(string $action): string
     {
         switch ($action) {
             case 'showalbum';
@@ -116,7 +93,7 @@ class PageLayoutView
      * @param string $sheet name of the sheet
      * @return string|NULL if nothing found, value if found
      */
-    public function getFieldFromFlexform($key, $sheet = 'general')
+    private function getFieldFromFlexform(string $key, string $sheet = 'general'): ?string
     {
         $flexform = $this->flexFormData;
         if (isset($flexform['data'])) {
@@ -131,12 +108,7 @@ class PageLayoutView
         return null;
     }
 
-    /**
-     * Render selected albums
-     *
-     * @return void
-     */
-    public function getAlbumSelection()
+    private function addSelectedAlbumToSettingsSummary(): void
     {
         $albumUid = (int)$this->getFieldFromFlexform('settings.mediaAlbum');
         if ((int)$albumUid > 0) {
@@ -144,14 +116,14 @@ class PageLayoutView
             $rowSysFileCollectionRecords = $this->getDatabaseConnection()->select(['*'], 'sys_file_collection', [
                 'uid' => (int)$albumUid,
                 'deleted' => 0,
-            ])->fetchAll();
+            ])->fetchAllAssociative();
 
             $albums = [];
             foreach ($rowSysFileCollectionRecords as $record) {
                 $albums[] = htmlspecialchars(BackendUtilityCore::getRecordTitle('sys_file_collection', $record));
             }
 
-            $this->tableData[] = [
+            $this->summaryData[] = [
                 $this->getLanguageService()->sL(self::LLPATH . 'flexforms.mediagallery.mediaAlbum') .
                 '<br />',
                 implode(', ', $albums)
@@ -159,13 +131,7 @@ class PageLayoutView
         }
     }
 
-    /**
-     * Render selected albums
-     *
-     * @param bool $showCategoryMode show the category conjunction
-     * @return void
-     */
-    public function getAlbumsSelection()
+    private function addSelectedAlbumsToSettingsSummary(): void
     {
         $filterMode = '';
         $albums = [];
@@ -195,13 +161,13 @@ class PageLayoutView
                     $q->expr()->in('uid', $quotedIdentifiers)
                 );
 
-            $rowSysFileCollectionRecords = $q->execute()->fetchAll();
+            $rowSysFileCollectionRecords = $q->execute()->fetchAllAssociative();
 
             foreach ((array)$rowSysFileCollectionRecords as $record) {
                 $albums[] = htmlspecialchars(BackendUtilityCore::getRecordTitle('sys_file_collection', $record));
             }
 
-            $this->tableData[] = [
+            $this->summaryData[] = [
                 $this->getLanguageService()->sL(self::LLPATH . 'flexforms.mediagallery.mediaAlbumsUids') .
                 '<br />' . $filterMode,
                 implode(', ', $albums)
@@ -209,12 +175,7 @@ class PageLayoutView
         }
     }
 
-    /**
-     * Get the startingPoint
-     *
-     * @return void
-     */
-    public function getStartingPoint()
+    private function addStartingPointToSettingsSummary(): void
     {
         $value = $this->getFieldFromFlexform('settings.startingpoint');
 
@@ -230,8 +191,7 @@ class PageLayoutView
                     $q->expr()->in('uid', $quotedIdentifiers)
                 );
 
-            $rawPagesRecords = $q->execute()->fetchAll();
-
+            $rawPagesRecords = $q->execute()->fetchAllAssociative();
 
             foreach ((array)$rawPagesRecords as $page) {
                 $pagesOut[] = htmlspecialchars(BackendUtilityCore::getRecordTitle('pages',
@@ -248,12 +208,12 @@ class PageLayoutView
 
             if (!empty($recursiveLevelText)) {
                 $recursiveLevelText = '<br />' .
-                    $this->getLanguageService()->sL('LLL:EXT:lang/locallang_general.xlf:LGL.recursive') . ' ' .
+                    $this->getLanguageService()->sL('LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.recursive') . ' ' .
                     $recursiveLevelText;
             }
 
-            $this->tableData[] = [
-                $this->getLanguageService()->sL('LLL:EXT:lang/locallang_general.php:LGL.startingpoint'),
+            $this->summaryData[] = [
+                $this->getLanguageService()->sL('LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.startingpoint'),
                 implode(', ', $pagesOut) . $recursiveLevelText
             ];
         }
@@ -261,39 +221,29 @@ class PageLayoutView
 
     /**
      * Render the settings as table for Web>Page module
-     * System settings are displayed in mono font
      *
-     * @return string
+     * System settings are displayed in mono font
      */
-    protected function renderSettingsAsTable()
+    private function renderSettingsAsTable(): string
     {
-        if (count($this->tableData) == 0) {
+        if (count($this->summaryData) == 0) {
             return '';
         }
 
         $content = '';
-        foreach ($this->tableData as $line) {
+        foreach ($this->summaryData as $line) {
             $content .= '<strong>' . $line[0] . '</strong>' . ' ' . $line[1] . '<br />';
         }
 
         return '<pre style="white-space:normal">' . $content . '</pre>';
     }
 
-    /**
-     * Return language service instance
-     *
-     * @return \TYPO3\CMS\Core\Localization\LanguageService
-     */
-    public function getLanguageService()
+    private function getLanguageService(): LanguageService
     {
         return $GLOBALS['LANG'];
     }
 
-    /**
-     * @param string $table
-     * @return \TYPO3\CMS\Core\Database\Connection
-     */
-    public function getDatabaseConnection(string $table = 'sys_file_collection')
+    private function getDatabaseConnection(string $table = 'sys_file_collection'): Connection
     {
         return GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable($table);
     }

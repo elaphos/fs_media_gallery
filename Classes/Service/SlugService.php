@@ -51,7 +51,7 @@ class SlugService
                     $queryBuilder->expr()->isNull($this->slugFieldName)
                 )
             )
-            ->execute()->fetchColumn(0);
+            ->execute()->fetchOne();
 
         return $elementCount;
     }
@@ -85,7 +85,8 @@ class SlugService
                 )
             )
             ->execute();
-        while ($record = $statement->fetch()) {
+
+        while ($record = $statement->fetchAssociative()) {
             //Use the core slughelper which is also used in the BE form
             $slug = $slugHelper->generate($record, $record['pid']);
             /** @var QueryBuilder $queryBuilder */
@@ -121,7 +122,7 @@ class SlugService
             ->getQueryBuilderForTable('tx_realurl_uniqalias');
         $schemaManager = $queryBuilder->getConnection()->getSchemaManager();
         if ($schemaManager->tablesExist(['tx_realurl_uniqalias']) === true) {
-            // Count valid aliases for news
+            // Count valid aliases
             $queryBuilder->getRestrictions()->removeAll();
             $elementCount = $queryBuilder->selectLiteral('COUNT(DISTINCT ' . $this->tableName . '.uid)')
                 ->from('tx_realurl_uniqalias')
@@ -163,13 +164,13 @@ class SlugService
                         )
                     )
                 )
-                ->execute()->fetchColumn(0);
+                ->execute()->fetchOne(0);
         }
         return $elementCount;
     }
 
     /**
-     * Perform migration of EXT:realurl unique alias into empty news slugs
+     * Perform migration of EXT:realurl unique alias into fs_media_gallery slugs
      *
      * @return array
      */
@@ -235,7 +236,7 @@ class SlugService
                 ->execute();
 
             // Update entries
-            while ($record = $statement->fetch()) {
+            while ($record = $statement->fetchAssociative()) {
                 $slug = (string)$record['value_alias'];
                 $queryBuilder = $connection->createQueryBuilder();
                 $queryBuilder->update($this->tableName)

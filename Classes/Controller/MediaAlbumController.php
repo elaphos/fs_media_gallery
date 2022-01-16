@@ -1,4 +1,5 @@
 <?php
+
 namespace MiniFranske\FsMediaGallery\Controller;
 
 /***************************************************************
@@ -25,16 +26,20 @@ namespace MiniFranske\FsMediaGallery\Controller;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use GeorgRinger\NumberedPagination\NumberedPagination;
+use MiniFranske\FsMediaGallery\Pagination\ExtendedArrayPaginator;
 use MiniFranske\FsMediaGallery\Utility\TypoScriptUtility;
 use MiniFranske\FsMediaGallery\Domain\Repository\MediaAlbumRepository;
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Pagination\ArrayPaginator;
+use TYPO3\CMS\Core\Pagination\SimplePagination;
+use TYPO3\CMS\Extbase\Http\ForwardResponse;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
 use TYPO3\CMS\Core\Http\ImmediateResponseException;
 use MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum;
-use MiniFranske\FsMediaGallery\Utility\PageUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -137,7 +142,8 @@ class MediaAlbumController extends ActionController
      */
     public function injectMediaAlbumRepository(
         MediaAlbumRepository $mediaAlbumRepository
-    ) {
+    )
+    {
         $this->mediaAlbumRepository = $mediaAlbumRepository;
         if (!empty($this->settings['allowedAssetMimeTypes'])) {
             $this->mediaAlbumRepository->setAllowedAssetMimeTypes(GeneralUtility::trimExplode(',',
@@ -169,12 +175,10 @@ class MediaAlbumController extends ActionController
      * is needed as default action (with no output).
      * It is set as default action in flexform to make sure the
      * correct tabs/fields are shown when a new plugin is added.
-     *
-     * @return string
      */
-    public function indexAction()
+    public function indexAction(): ResponseInterface
     {
-        return '<i>Please select a display mode in the plugin.</i>';
+        return $this->htmlResponse('<i>Please select a display mode in the plugin.</i>');
     }
 
     /**
@@ -182,9 +186,8 @@ class MediaAlbumController extends ActionController
      * Displays a (nested) list of albums; default/show action in fs_media_gallery <= 1.0.0
      *
      * @param int $mediaAlbum (this is not directly mapped to an object to handle 404 on our own)
-     * @return void
      */
-    public function nestedListAction($mediaAlbum = 0)
+    public function nestedListAction(int $mediaAlbum = 0): ResponseInterface
     {
         $mediaAlbums = null;
         $mediaAlbum = (int)$mediaAlbum ?: null;
@@ -197,7 +200,7 @@ class MediaAlbumController extends ActionController
             /** @var MediaAlbum $mediaAlbum */
             $mediaAlbum = $this->mediaAlbumRepository->findByUid($mediaAlbum);
             if (!$mediaAlbum) {
-                $this->pageNotFound(LocalizationUtility::translate('no_album_found', 'fs_media_gallery'));
+                return $this->pageNotFound(LocalizationUtility::translate('no_album_found', 'fs_media_gallery'));
             }
         }
 
@@ -251,6 +254,15 @@ class MediaAlbumController extends ActionController
         $this->view->assign('showBackLink', $showBackLink);
         $this->view->assign('mediaAlbums', $mediaAlbums);
         $this->view->assign('mediaAlbum', $mediaAlbum);
+
+        if ($mediaAlbums) {
+            $this->view->assign('mediaAlbumsPagination', $this->getAlbumsPagination($mediaAlbums));
+        }
+        if ($mediaAlbum) {
+            $this->view->assign('mediaAlbumPagination', $this->getAlbumPagination($mediaAlbum));
+        }
+
+        return $this->htmlResponse();
     }
 
     /**
@@ -258,16 +270,15 @@ class MediaAlbumController extends ActionController
      * Displays a (one-dimensional, flattened) list of albums
      *
      * @param int $mediaAlbum (this is not directly mapped to an object to handle 404 on our own)
-     * @return void
      */
-    public function flatListAction($mediaAlbum = 0)
+    public function flatListAction(int $mediaAlbum = 0): ResponseInterface
     {
         $showBackLink = true;
         if ($mediaAlbum) {
             // if an album is given, display it
             $mediaAlbum = $this->mediaAlbumRepository->findByUid($mediaAlbum);
             if (!$mediaAlbum) {
-                $this->pageNotFound(LocalizationUtility::translate('no_album_found', 'fs_media_gallery'));
+                return $this->pageNotFound(LocalizationUtility::translate('no_album_found', 'fs_media_gallery'));
             }
             $this->view->assign('displayMode', 'album');
             $this->view->assign('mediaAlbum', $mediaAlbum);
@@ -280,31 +291,35 @@ class MediaAlbumController extends ActionController
             $showBackLink = false;
         }
         $this->view->assign('showBackLink', $showBackLink);
+
+        if ($mediaAlbum) {
+            $this->view->assign('mediaAlbumPagination', $this->getAlbumPagination($mediaAlbum));
+        }
+
+        return $this->htmlResponse();
     }
 
     /**
      * Show single Album (defined in FlexForm/TS) Action
      * As showAlbumAction() displays any album by the given param this function gets its value from TS/Felxform
      * This could be merged with showAlbumAction() if there is a way to determine which switchableControllerActions is defined in Felxform.
-     *
-     * @return void
      */
-    public function showAlbumByConfigAction()
+    public function showAlbumByConfigAction(): ResponseInterface
     {
         // get all request arguments (e.g. pagination widget)
         $arguments = $this->request->getArguments();
         // set album id from settings
         $arguments['mediaAlbum'] = $this->settings['mediaAlbum'];
-        $this->forward('showAlbum', null, null, $arguments);
+
+        return (new ForwardResponse('showAlbum'))->withArguments($arguments);
     }
 
     /**
      * Show single Album Action
      *
      * @param int $mediaAlbum (this is not directly mapped to an object to handle 404 on our own)
-     * @return void
      */
-    public function showAlbumAction($mediaAlbum = null)
+    public function showAlbumAction(int $mediaAlbum = null): ResponseInterface
     {
         $mediaAlbum = (int)$mediaAlbum ?: null;
         if (empty($mediaAlbum)) {
@@ -318,6 +333,9 @@ class MediaAlbumController extends ActionController
         $mediaAlbum = $this->mediaAlbumRepository->findByUid($mediaAlbum, $respectStorage);
         $this->view->assign('mediaAlbum', $mediaAlbum);
         $this->view->assign('showBackLink', false);
+        $this->view->assign('mediaAlbumPagination', $this->getAlbumPagination($mediaAlbum));
+
+        return $this->htmlResponse();
     }
 
     /**
@@ -327,7 +345,7 @@ class MediaAlbumController extends ActionController
      * @param int $mediaAssetUid
      * @TYPO3\CMS\Extbase\Annotation\IgnoreValidation("")
      */
-    public function showAssetAction(MediaAlbum $mediaAlbum, $mediaAssetUid)
+    public function showAssetAction(MediaAlbum $mediaAlbum, int $mediaAssetUid): ResponseInterface
     {
 
         if (isset($this->settings['album']['assets']['orderBy'])) {
@@ -341,26 +359,28 @@ class MediaAlbumController extends ActionController
         list($previousAsset, $mediaAsset, $nextAsset) = $mediaAlbum->getPreviousCurrentAndNext($mediaAssetUid);
         if (!$mediaAsset) {
             $message = LocalizationUtility::translate('asset_not_found', 'fs_media_gallery');
-            $this->pageNotFound((empty($message) ? 'Asset not found.' : $message));
+            return $this->pageNotFound((empty($message) ? 'Asset not found.' : $message));
         }
         $this->view->assign('previousAsset', $previousAsset);
         $this->view->assign('nextAsset', $nextAsset);
         $this->view->assign('mediaAsset', $mediaAsset);
         $this->view->assign('mediaAlbum', $mediaAlbum);
+
+        return $this->htmlResponse();
     }
 
     /**
      * Show random media asset
-     *
-     * @return void
      */
-    public function randomAssetAction()
+    public function randomAssetAction(): ResponseInterface
     {
 
         $this->setAlbumUidRestrictions();
 
         $mediaAlbum = $this->mediaAlbumRepository->findRandom();
         $this->view->assign('mediaAlbum', $mediaAlbum);
+
+        return $this->htmlResponse();
     }
 
     /**
@@ -369,7 +389,7 @@ class MediaAlbumController extends ActionController
      *
      * @return string|boolean The flash message or FALSE if no flash message should be set
      */
-    protected function getErrorFlashMessage()
+    protected function getErrorFlashMessage(): bool
     {
         return false;
     }
@@ -377,18 +397,62 @@ class MediaAlbumController extends ActionController
     /**
      * Page not found wrapper
      *
-     * @param string $message
-     * @throws StopActionException
+     * @throws ImmediateResponseException
      */
-    protected function pageNotFound($message)
+    protected function pageNotFound(string $message): ResponseInterface
     {
         if (!empty($GLOBALS['TSFE'])) {
             $response = GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction($GLOBALS['TYPO3_REQUEST'], $message);
             throw new ImmediateResponseException($response);
-        } else {
-            echo $message;
         }
-        throw new StopActionException();
+
+        return $this->htmlResponse($message);
+    }
+
+    private function getAlbumPagination(MediaAlbum $album): array
+    {
+        $paginationConfiguration = $this->settings['album']['paginate'] ?? [];
+
+        $itemsPerPage = (int)($paginationConfiguration['itemsPerPage'] ?? 10);
+        $maximumNumberOfLinks = (int)($paginationConfiguration['maximumNumberOfLinks'] ?? 0);
+
+        $currentPage = $this->request->hasArgument('currentPage') ? (int)$this->request->getArgument('currentPage') : 1;
+        $paginator = GeneralUtility::makeInstance(ExtendedArrayPaginator::class, $album->getAssets(), $currentPage, $itemsPerPage);
+        $paginationClass = $paginationConfiguration['class'] ?? SimplePagination::class;
+        if ($paginationClass === NumberedPagination::class && $maximumNumberOfLinks) {
+            $pagination = GeneralUtility::makeInstance(NumberedPagination::class, $paginator, $maximumNumberOfLinks);
+        } else {
+            $pagination = GeneralUtility::makeInstance(SimplePagination::class, $paginator);
+        }
+
+        return [
+            'currentPage' => $currentPage,
+            'paginator' => $paginator,
+            'pagination' => $pagination,
+        ];
+    }
+
+    private function getAlbumsPagination(array $albums): array
+    {
+        $paginationConfiguration = $this->settings['list']['paginate'] ?? [];
+
+        $itemsPerPage = (int)($paginationConfiguration['itemsPerPage'] ?? 10);
+        $maximumNumberOfLinks = (int)($paginationConfiguration['maximumNumberOfLinks'] ?? 0);
+
+        $currentPage = $this->request->hasArgument('currentAlbumPage') ? (int)$this->request->getArgument('currentAlbumPage') : 1;
+        $paginator = GeneralUtility::makeInstance(ArrayPaginator::class, $albums, $currentPage, $itemsPerPage);
+        $paginationClass = $paginationConfiguration['class'] ?? SimplePagination::class;
+        if ($paginationClass === NumberedPagination::class && $maximumNumberOfLinks) {
+            $pagination = GeneralUtility::makeInstance(NumberedPagination::class, $paginator, $maximumNumberOfLinks);
+        } else {
+            $pagination = GeneralUtility::makeInstance(SimplePagination::class, $paginator);
+        }
+
+        return [
+            'currentPage' => $currentPage,
+            'paginator' => $paginator,
+            'pagination' => $pagination,
+        ];
     }
 
 }

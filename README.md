@@ -14,7 +14,7 @@ A FAL based media gallery for TYPO3. Show your assets from your local or remote 
 
 ## Requirements
 
-- TYPO3 9 LTS or 10 LTS
+- TYPO3 11 LTS
 
 
 ## Quick install notes

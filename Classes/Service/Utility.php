@@ -1,4 +1,5 @@
 <?php
+
 namespace MiniFranske\FsMediaGallery\Service;
 
 /***************************************************************
@@ -24,8 +25,9 @@ namespace MiniFranske\FsMediaGallery\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\SingletonInterface;
-use \TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
@@ -71,7 +73,7 @@ class Utility implements SingletonInterface
                 ->orderBy('title');
 
             $statement = $q->execute();
-            while ($row = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            while ($row = $statement->fetchAssociative()) {
                 if (BackendUtility::readPageAccess($row['uid'], $this->getBeUser()->getPagePermsClause(1))) {
                     $pages[$row['uid']] = $row['title'];
                 }
@@ -88,17 +90,21 @@ class Utility implements SingletonInterface
      */
     public function clearMediaGalleryPageCache(FolderInterface $folder)
     {
-        /** @var DataHandler $tce */
-        $tce = GeneralUtility::makeInstance(\TYPO3\CMS\Core\DataHandling\DataHandler::class);
-        $tce->start([], []);
-
         $collections = $this->findFileCollectionRecordsForFolder(
             $folder->getStorage()->getUid(),
             $folder->getIdentifier(),
             array_keys($this->getStorageFolders())
         );
 
-        foreach ((array)$collections as $collection) {
+        if (!$collections) {
+            return;
+        }
+
+        /** @var DataHandler $tce */
+        $tce = GeneralUtility::makeInstance(DataHandler::class);
+        $tce->start([], []);
+
+        foreach ($collections as $collection) {
             $pageConfig = BackendUtility::getPagesTSconfig($collection['pid']);
             if (!empty($pageConfig['TCEMAIN.']['clearCacheCmd'])) {
                 $clearCacheCommands = GeneralUtility::trimExplode(',', $pageConfig['TCEMAIN.']['clearCacheCmd'], true);
@@ -112,12 +118,8 @@ class Utility implements SingletonInterface
 
     /**
      * Gets the first parentCollections of the given folder and mediaFolderUid(storagepid)
-     *
-     * @param Folder $folder
-     * @param $mediaFolderUid
-     * @return array|null
      */
-    public function getFirstParentCollections(Folder $folder, $mediaFolderUid)
+    public function getFirstParentCollections(Folder $folder, int $mediaFolderUid): array
     {
         $parentCollection = [];
         $evalPermissions = $folder->getStorage()->getEvaluatePermissions();
@@ -128,7 +130,7 @@ class Utility implements SingletonInterface
             $parentCollection = $this->findFileCollectionRecordsForFolder(
                 $folder->getStorage()->getUid(),
                 $folder->getParentFolder()->getIdentifier(),
-                $mediaFolderUid
+                [$mediaFolderUid]
             );
             if (!count($parentCollection)) {
                 $parentCollection = $this->getFirstParentCollections($folder->getParentFolder(), $mediaFolderUid);
@@ -141,20 +143,21 @@ class Utility implements SingletonInterface
 
     /**
      * Update file_collection record after move/rename folder
-     *
-     * @param int $oldStorageUid
-     * @param string $oldIdentifier
-     * @param int $newStorageUid
-     * @param string $newIdentifier
      */
-    public function updateFolderRecord($oldStorageUid, $oldIdentifier, $newStorageUid, $newIdentifier)
+    public function updateFolderRecord(int $oldStorageUid, string $oldIdentifier, int $newStorageUid, string $newIdentifier, ?int $newParentAlbum = 0): void
     {
+        $updatedData = [
+            'storage' => $newStorageUid,
+            'folder' => $newIdentifier
+        ];
+
+        if ($newParentAlbum !== null) {
+            $updatedData['parentalbum'] = $newParentAlbum;
+        }
+
         $this->getDatabaseConnection()->update(
             'sys_file_collection',
-            [
-                'storage' => $newStorageUid,
-                'folder' => $newIdentifier
-            ],
+            $updatedData,
             [
                 'storage' => (int)$oldStorageUid,
                 'folder' => $oldIdentifier,
@@ -170,11 +173,11 @@ class Utility implements SingletonInterface
      */
     public function deleteFolderRecord($storageUid, $identifier)
     {
-       $this->getDatabaseConnection()->update(
-           'sys_file_collection',
-           ['deleted' => 1],
-           ['folder' => $identifier, 'storage' => $storageUid]
-       );
+        $this->getDatabaseConnection()->update(
+            'sys_file_collection',
+            ['deleted' => 1],
+            ['folder' => $identifier, 'storage' => $storageUid]
+        );
     }
 
     /**
@@ -216,14 +219,9 @@ class Utility implements SingletonInterface
     }
 
     /**
-     * Find all storagecollections bases of storageUid, folder and optional pid
-     *
-     * @param integer $storageUid
-     * @param string $folder
-     * @param NULL|array|integer $pids
-     * @return array|NULL
+     * @param null|int[] $pids
      */
-    public function findFileCollectionRecordsForFolder($storageUid, $folder, $pids = null)
+    public function findFileCollectionRecordsForFolder(int $storageUid, string $folder, ?array $pids = null): ?array
     {
         $q = $this->getDatabaseConnection()->createQueryBuilder();
 
@@ -231,7 +229,7 @@ class Utility implements SingletonInterface
             ->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
 
-        $q->select('uid', 'pid', 'title', 'type', 'hidden')
+        $q->select('uid', 'pid', 'title', 'type', 'hidden', 'parentalbum')
             ->from('sys_file_collection')
             ->where(
                 $q->expr()->andX(
@@ -240,36 +238,22 @@ class Utility implements SingletonInterface
                 )
             );
 
-        if (is_int($pids)) {
-            $q->andWhere(
-                $q->expr()->eq('pid', $q->createNamedParameter($pids, \PDO::PARAM_INT))
-            );
-        } elseif (is_array($pids) && count($pids) > 0) {
+        if (is_array($pids) && count($pids) > 0) {
             $q->andWhere(
                 $q->expr()->in('pid', $pids)
             );
         }
 
-        return $q->execute()->fetchAll();
+        return $q->execute()->fetchAllAssociative();
     }
 
-    /**
-     * Gets the database connection object.
-     *
-     * @param string $table
-     * @return Connection
-     */
-    protected function getDatabaseConnection(string $table = 'sys_file_collection')
+    protected function getDatabaseConnection(string $table = 'sys_file_collection'): Connection
     {
         return GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable($table);
     }
 
-    /**
-     * @return \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
-     */
-    protected function getBeUser()
+    protected function getBeUser(): ?BackendUserAuthentication
     {
-        return $GLOBALS['BE_USER'];
+        return $GLOBALS['BE_USER'] ?? null;
     }
-
 }

@@ -1,0 +1,65 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  MiniFranske\FsMediaGallery\Service\Utility: ~
+
+  MiniFranske\FsMediaGallery\Listeners\IconFactoryListener:
+    tags:
+      - name: event.listener
+        identifier: 'album-change'
+        method: 'buildIconForResource'
+        event: TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent
+
+  MiniFranske\FsMediaGallery\Listeners\FolderChangedListener:
+    tags:
+      - name: event.listener
+        identifier: 'album-change'
+        method: 'postFileAdd'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileAddedEvent
+      - name: event.listener
+        identifier: 'album-change'
+        method: 'postFileCopy'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileCopiedEvent
+      - name: event.listener
+        identifier: 'album-change'
+        method: 'postFileCreate'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileCreatedEvent
+      - name: event.listener
+        identifier: 'album-change'
+        method: 'postFileDelete'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileDeletedEvent
+      - name: event.listener
+        identifier: 'album-change'
+        method: 'postFileMove'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileMovedEvent
+      - name: event.listener
+        identifier: 'album-change'
+        method: 'postFileRename'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileRenamedEvent
+      - name: event.listener
+        identifier: 'album-change'
+        method: 'postFileReplace'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileReplacedEvent
+      - name: event.listener
+        identifier: 'album-change'
+        method: 'preFolderDelete'
+        event: TYPO3\CMS\Core\Resource\Event\BeforeFolderDeletedEvent
+      - name: event.listener
+        identifier: 'album-change'
+        method: 'preFolderMove'
+        event: TYPO3\CMS\Core\Resource\Event\BeforeFolderMovedEvent
+      - name: event.listener
+        identifier: 'album-change'
+        method: 'postFolderAdd'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFolderAddedEvent
+      - name: event.listener
+        identifier: 'album-change'
+        method: 'postFolderDelete'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFolderDeletedEvent
+      - name: event.listener
+        identifier: 'album-change'
+        method: 'postFolderMove'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFolderMovedEvent

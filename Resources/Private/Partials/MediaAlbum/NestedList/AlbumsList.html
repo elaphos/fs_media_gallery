@@ -7,11 +7,11 @@
 	-->
 
 	<f:section name="AlbumsList">
-		<mf:widget.paginate objects="{mediaAlbums}" as="paginatedAlbums" widgetId="album" configuration="{itemsPerPage:settings.list.pagination.itemsPerPage, insertAbove:settings.list.pagination.insertAbove, insertBelow:settings.list.pagination.insertBelow, maximumNumberOfLinks:settings.list.pagination.maximumNumberOfLinks, pagesBefore:settings.list.pagination.pagesBefore, pagesAfter:settings.list.pagination.pagesAfter}">
-			<f:if condition="{paginatedAlbums}">
+		<f:render partial="AlbumsPagination" contentAs="content" arguments="{pagination: mediaAlbumsPagination, mediaAlbum: mediaAlbum}">
+			<f:if condition="{mediaAlbumsPagination.paginator.paginatedItems}">
 				<f:then>
 					<div class="thumbs thumbs-albums clearfix">
-						<f:for each="{paginatedAlbums}" as="pagedMediaAlbum">
+						<f:for each="{mediaAlbumsPagination.paginator.paginatedItems}" as="pagedMediaAlbum">
 							<div class="thumb">
 								<f:render partial="MediaAlbum/Thumb" section="Thumb" arguments="{mediaAlbum:pagedMediaAlbum, random:settings.list.thumb.random, width:settings.list.thumb.width, height:settings.list.thumb.height, resizeMode:settings.list.thumb.resizeMode}" />
 							</div>
@@ -24,7 +24,7 @@
 					</div>
 				</f:else>
 			</f:if>
-		</mf:widget.paginate>
+		</f:render>
 	</f:section>
 
 </div>
