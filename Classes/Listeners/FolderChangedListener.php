@@ -25,6 +25,7 @@ namespace MiniFranske\FsMediaGallery\Listeners;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Resource\Event\AfterFileAddedEvent;
 use TYPO3\CMS\Core\Resource\Event\AfterFileCopiedEvent;
@@ -136,7 +137,7 @@ final class FolderChangedListener
         foreach ($this->folderMapping[$folder->getCombinedIdentifier()] as $folderInfo) {
             $this->utilityService->deleteFolderRecord($storageUid, $folderInfo[1]);
         }
-        $this->utilityService->clearMediaGalleryPageCache($folder);
+        $this->clearMediaGalleryPageCache($folder);
     }
 
     /**
@@ -170,7 +171,7 @@ final class FolderChangedListener
                 $folder->getIdentifier(),
                 $parentUid
             );
-            $this->utilityService->clearMediaGalleryPageCache($folder);
+            $this->clearMediaGalleryPageCache($folder);
         }
     }
 
@@ -202,17 +203,17 @@ final class FolderChangedListener
 
     public function postFileRename(AfterFileRenamedEvent $event): void
     {
-        $this->utilityService->clearMediaGalleryPageCache($event->getFile()->getParentFolder());
+        $this->clearMediaGalleryPageCache($event->getFile()->getParentFolder());
     }
 
     public function postFileReplace(AfterFileReplacedEvent $event): void
     {
-        $this->utilityService->clearMediaGalleryPageCache($event->getFile()->getParentFolder());
+        $this->clearMediaGalleryPageCache($event->getFile()->getParentFolder());
     }
 
     private function clearMediaGalleryPageCache(FolderInterface $folder): void
     {
-        if ($this->getConfigFlag('clearCacheAfterFileChange')) {
+        if ($this->getBackendUser() && $this->getConfigFlag('clearCacheAfterFileChange')) {
             $this->utilityService->clearMediaGalleryPageCache($folder);
         }
     }
@@ -231,5 +232,10 @@ final class FolderChangedListener
     private function getConfigFlag(string $flag): bool
     {
         return (bool)($this->extensionConfiguration->get('fs_media_gallery')[$flag] ?? false);
+    }
+
+    private function getBackendUser(): ?BackendUserAuthentication
+    {
+        return $GLOBALS['BE_USER'] ?? null;
     }
 }

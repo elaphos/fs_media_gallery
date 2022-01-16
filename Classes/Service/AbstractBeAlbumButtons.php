@@ -93,7 +93,7 @@ abstract class AbstractBeAlbumButtons
                         $parents = $utility->findFileCollectionRecordsForFolder(
                             $folder->getStorage()->getUid(),
                             $folder->getParentFolder()->getIdentifier(),
-                            $uid
+                            [$uid]
                         );
                         // if parent(s) found we take the first one
                         if (count($parents)) {

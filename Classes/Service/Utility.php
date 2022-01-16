@@ -90,17 +90,21 @@ class Utility implements SingletonInterface
      */
     public function clearMediaGalleryPageCache(FolderInterface $folder)
     {
-        /** @var DataHandler $tce */
-        $tce = GeneralUtility::makeInstance(\TYPO3\CMS\Core\DataHandling\DataHandler::class);
-        $tce->start([], []);
-
         $collections = $this->findFileCollectionRecordsForFolder(
             $folder->getStorage()->getUid(),
             $folder->getIdentifier(),
             array_keys($this->getStorageFolders())
         );
 
-        foreach ((array)$collections as $collection) {
+        if (!$collections) {
+            return;
+        }
+
+        /** @var DataHandler $tce */
+        $tce = GeneralUtility::makeInstance(DataHandler::class);
+        $tce->start([], []);
+
+        foreach ($collections as $collection) {
             $pageConfig = BackendUtility::getPagesTSconfig($collection['pid']);
             if (!empty($pageConfig['TCEMAIN.']['clearCacheCmd'])) {
                 $clearCacheCommands = GeneralUtility::trimExplode(',', $pageConfig['TCEMAIN.']['clearCacheCmd'], true);
@@ -114,12 +118,8 @@ class Utility implements SingletonInterface
 
     /**
      * Gets the first parentCollections of the given folder and mediaFolderUid(storagepid)
-     *
-     * @param Folder $folder
-     * @param $mediaFolderUid
-     * @return array|null
      */
-    public function getFirstParentCollections(Folder $folder, $mediaFolderUid)
+    public function getFirstParentCollections(Folder $folder, int $mediaFolderUid): array
     {
         $parentCollection = [];
         $evalPermissions = $folder->getStorage()->getEvaluatePermissions();
@@ -130,7 +130,7 @@ class Utility implements SingletonInterface
             $parentCollection = $this->findFileCollectionRecordsForFolder(
                 $folder->getStorage()->getUid(),
                 $folder->getParentFolder()->getIdentifier(),
-                $mediaFolderUid
+                [$mediaFolderUid]
             );
             if (!count($parentCollection)) {
                 $parentCollection = $this->getFirstParentCollections($folder->getParentFolder(), $mediaFolderUid);
@@ -219,14 +219,9 @@ class Utility implements SingletonInterface
     }
 
     /**
-     * Find all storagecollections bases of storageUid, folder and optional pid
-     *
-     * @param integer $storageUid
-     * @param string $folder
-     * @param NULL|array|integer $pids
-     * @return array|NULL
+     * @param null|int[] $pids
      */
-    public function findFileCollectionRecordsForFolder($storageUid, $folder, $pids = null)
+    public function findFileCollectionRecordsForFolder(int $storageUid, string $folder, ?array $pids = null): ?array
     {
         $q = $this->getDatabaseConnection()->createQueryBuilder();
 
@@ -243,11 +238,7 @@ class Utility implements SingletonInterface
                 )
             );
 
-        if (is_int($pids)) {
-            $q->andWhere(
-                $q->expr()->eq('pid', $q->createNamedParameter($pids, \PDO::PARAM_INT))
-            );
-        } elseif (is_array($pids) && count($pids) > 0) {
+        if (is_array($pids) && count($pids) > 0) {
             $q->andWhere(
                 $q->expr()->in('pid', $pids)
             );

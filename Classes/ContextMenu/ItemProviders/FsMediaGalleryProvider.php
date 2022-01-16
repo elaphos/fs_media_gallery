@@ -105,7 +105,7 @@ class FsMediaGalleryProvider extends AbstractProvider
                     $parents = $utility->findFileCollectionRecordsForFolder(
                         $this->folder->getStorage()->getUid(),
                         $this->folder->getParentFolder()->getIdentifier(),
-                        $uid
+                        [$uid]
                     );
 
                     // If parent(s) found we take the first one
