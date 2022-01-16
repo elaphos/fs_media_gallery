@@ -26,6 +26,7 @@ namespace MiniFranske\FsMediaGallery\Hooks;
 
 use MiniFranske\FsMediaGallery\Service\AbstractBeAlbumButtons;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
+use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -33,17 +34,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class DocHeaderButtonsHook extends AbstractBeAlbumButtons
 {
-    /**
-     * Create button
-     *
-     * @param string $title
-     * @param string $shortTitle
-     * @param string $icon
-     * @param string $url
-     * @param bool $addReturnUrl
-     * @return string|array
-     */
-    protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true)
+    protected function createLink(string $title, string $shortTitle, Icon $icon, string $url, bool $addReturnUrl = true): array
     {
         return [
             'title' => $title,
@@ -53,13 +44,9 @@ class DocHeaderButtonsHook extends AbstractBeAlbumButtons
     }
 
     /**
-     * Get buttons
-     *
-     * @param array $params
-     * @param ButtonBar $buttonBar
-     * @return array
+     * Add media album buttons to file list
      */
-    public function moduleTemplateDocHeaderGetButtons($params, ButtonBar $buttonBar)
+    public function moduleTemplateDocHeaderGetButtons(array $params, ButtonBar $buttonBar): array
     {
         $buttons = $params['buttons'];
         if (GeneralUtility::_GP('M') === 'file_FilelistList'
