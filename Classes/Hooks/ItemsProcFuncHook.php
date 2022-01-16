@@ -73,8 +73,8 @@ class ItemsProcFuncHook
         $extConf = $this->getExtensionConfiguration();;
         $allowedOptions = [];
         $allowedOptionsFromExtConf = [];
-        if (!empty($extConf['list.']['orderOptions'])) {
-            $allowedOptionsFromExtConf = GeneralUtility::trimExplode(',', $extConf['list.']['orderOptions']);
+        if (!empty($extConf['list']['orderOptions'])) {
+            $allowedOptionsFromExtConf = GeneralUtility::trimExplode(',', $extConf['list']['orderOptions']);
         }
         foreach ($allowedOptionsFromExtConf as $allowedOptionFromExtConf) {
             if (in_array($allowedOptionFromExtConf, $availableOptions)) {
@@ -102,8 +102,8 @@ class ItemsProcFuncHook
         $availableOptions = [];
         $extConf = $this->getExtensionConfiguration();;
 
-        if (!empty($extConf['asset.']['orderOptions'])) {
-            $allowedOptions = GeneralUtility::trimExplode(',', $extConf['asset.']['orderOptions']);
+        if (!empty($extConf['asset']['orderOptions'])) {
+            $allowedOptions = GeneralUtility::trimExplode(',', $extConf['asset']['orderOptions']);
         }
         // check if field exists in TCA of sys_file or sys_file_metadata
         foreach ($allowedOptions as $key => $option) {
