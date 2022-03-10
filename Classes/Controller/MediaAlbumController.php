@@ -411,7 +411,7 @@ class MediaAlbumController extends ActionController
 
     private function getAlbumPagination(MediaAlbum $album): array
     {
-        $paginationConfiguration = $this->settings['album']['paginate'] ?? [];
+        $paginationConfiguration = $this->settings['album']['pagination'] ?? [];
 
         $itemsPerPage = (int)($paginationConfiguration['itemsPerPage'] ?? 10);
         $maximumNumberOfLinks = (int)($paginationConfiguration['maximumNumberOfLinks'] ?? 0);
@@ -434,7 +434,7 @@ class MediaAlbumController extends ActionController
 
     private function getAlbumsPagination(array $albums): array
     {
-        $paginationConfiguration = $this->settings['list']['paginate'] ?? [];
+        $paginationConfiguration = $this->settings['list']['pagination'] ?? [];
 
         $itemsPerPage = (int)($paginationConfiguration['itemsPerPage'] ?? 10);
         $maximumNumberOfLinks = (int)($paginationConfiguration['maximumNumberOfLinks'] ?? 0);
