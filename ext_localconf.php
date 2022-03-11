@@ -4,7 +4,7 @@ defined('TYPO3_MODE') || die();
 $boot = function ($packageKey) {
 
     \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-        'MiniFranske.' . $packageKey,
+        $packageKey,
         'Mediagallery',
         [
             \MiniFranske\FsMediaGallery\Controller\MediaAlbumController::class => 'index,nestedList,flatList,showAlbum,showAlbumByConfig,showAsset,random',
