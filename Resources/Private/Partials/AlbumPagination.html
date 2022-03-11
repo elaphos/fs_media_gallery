@@ -55,7 +55,7 @@
                                     <f:link.action arguments="{currentPage: page, mediaAlbum: mediaAlbum}">{page}</f:link.action>
                                 </f:then>
                                 <f:else>
-                                    <f:link.action>{page}</f:link.action>
+                                    <f:link.action arguments="{mediaAlbum: mediaAlbum}">{page}</f:link.action>
                                 </f:else>
                             </f:if>
                         </li>
