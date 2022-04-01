@@ -273,6 +273,7 @@ class MediaAlbumController extends ActionController
      */
     public function flatListAction(int $mediaAlbum = 0): ResponseInterface
     {
+        $mediaAlbums = null;
         $showBackLink = true;
         if ($mediaAlbum) {
             // if an album is given, display it
@@ -285,13 +286,16 @@ class MediaAlbumController extends ActionController
         } else {
             // display the album list
             $mediaAlbums = $this->mediaAlbumRepository->findAll($this->settings['list']['hideEmptyAlbums'],
-                $this->settings['list']['orderBy'], $this->settings['list']['orderDirection']);
+            $this->settings['list']['orderBy'], $this->settings['list']['orderDirection']);
             $this->view->assign('displayMode', 'flatList');
             $this->view->assign('mediaAlbums', $mediaAlbums);
             $showBackLink = false;
         }
         $this->view->assign('showBackLink', $showBackLink);
 
+        if ($mediaAlbums) {
+            $this->view->assign('mediaAlbumsPagination', $this->getAlbumsPagination($mediaAlbums));
+        }
         if ($mediaAlbum) {
             $this->view->assign('mediaAlbumPagination', $this->getAlbumPagination($mediaAlbum));
         }
