@@ -45,7 +45,7 @@ class FileDescriptionViewHelper extends AbstractViewHelper
     public function initializeArguments()
     {
         parent::initializeArguments();
-        $this->registerArgument('file', File::class, 'File', true);
+        $this->registerArgument('file', FileInterface::class, 'File', true);
     }
 
     /**
