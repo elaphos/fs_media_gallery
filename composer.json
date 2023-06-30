@@ -21,15 +21,13 @@
   ],
   "require": {
     "typo3/cms-backend": "^11.5",
-    "typo3/cms-frontend": "^11.5"
+    "typo3/cms-frontend": "^11.5",
+    "georgringer/numbered-pagination": "^1.0.5"
   },
   "autoload": {
     "psr-4": {
       "MiniFranske\\FsMediaGallery\\": "Classes/"
     }
-  },
-  "suggest": {
-    "georgringer/numbered-pagination": "^1.0.1"
   },
   "extra": {
     "branch-alias": {
