@@ -95,17 +95,7 @@ class PageLayoutView
      */
     private function getFieldFromFlexform(string $key, string $sheet = 'general'): ?string
     {
-        $flexform = $this->flexFormData;
-        if (isset($flexform['data'])) {
-            $flexform = $flexform['data'];
-            if (is_array($flexform) && is_array($flexform[$sheet]) && is_array($flexform[$sheet]['lDEF'])
-                && is_array($flexform[$sheet]['lDEF'][$key]) && isset($flexform[$sheet]['lDEF'][$key]['vDEF'])
-            ) {
-                return $flexform[$sheet]['lDEF'][$key]['vDEF'];
-            }
-        }
-
-        return null;
+        return $this->flexFormData['data'][$sheet]['lDEF'][$key]['vDEF'] ?? null;
     }
 
     private function addSelectedAlbumToSettingsSummary(): void
