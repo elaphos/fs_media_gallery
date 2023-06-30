@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /*
  * This source file is proprietary of Beech Applications bv.
  * Created by: Ruud Silvrants
@@ -21,8 +23,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class SlugService
 {
-    protected $tableName = 'sys_file_collection';
-    protected $slugFieldName = 'slug';
+    protected string $tableName = 'sys_file_collection';
+    protected string $slugFieldName = 'slug';
 
     /**
      * @return bool
@@ -32,40 +34,31 @@ class SlugService
         return class_exists(SlugHelper::class);
     }
 
-    /**
-     * @return int
-     */
     public function countOfSlugUpdates(): int
     {
         /** @var QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->tableName);
         $queryBuilder->getRestrictions()->removeAll();
-        $elementCount = $queryBuilder->count('uid')
+        return $queryBuilder->count('uid')
             ->from($this->tableName)
             ->where(
                 $queryBuilder->expr()->orX(
                     $queryBuilder->expr()->eq(
                         $this->slugFieldName,
-                        $queryBuilder->createNamedParameter('', \PDO::PARAM_STR)
+                        $queryBuilder->createNamedParameter('')
                     ),
                     $queryBuilder->expr()->isNull($this->slugFieldName)
                 )
             )
             ->execute()->fetchOne();
-
-        return $elementCount;
     }
 
-    /**
-     * @return array
-     */
     public function performUpdateSlugs(): array
     {
         $databaseQueries = [];
 
         /** @var Connection $connection */
         $connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable($this->tableName);
-        /** @var QueryBuilder $queryBuilder */
         $queryBuilder = $connection->createQueryBuilder();
         $queryBuilder->getRestrictions()->removeAll();
         $fieldConfig = $GLOBALS['TCA'][$this->tableName]['columns'][$this->slugFieldName]['config'];
@@ -79,7 +72,7 @@ class SlugService
                 $queryBuilder->expr()->orX(
                     $queryBuilder->expr()->eq(
                         $this->slugFieldName,
-                        $queryBuilder->createNamedParameter('', \PDO::PARAM_STR)
+                        $queryBuilder->createNamedParameter('')
                     ),
                     $queryBuilder->expr()->isNull($this->slugFieldName)
                 )
@@ -89,13 +82,12 @@ class SlugService
         while ($record = $statement->fetchAssociative()) {
             //Use the core slughelper which is also used in the BE form
             $slug = $slugHelper->generate($record, $record['pid']);
-            /** @var QueryBuilder $queryBuilder */
             $queryBuilder = $connection->createQueryBuilder();
             $queryBuilder->update($this->tableName)
                 ->where(
                     $queryBuilder->expr()->eq(
                         'uid',
-                        $queryBuilder->createNamedParameter($record['uid'], \PDO::PARAM_INT)
+                        $queryBuilder->createNamedParameter($record['uid'], Connection::PARAM_INT)
                     )
                 )
                 ->set($this->slugFieldName, $slug);
@@ -140,7 +132,7 @@ class SlugService
                         $queryBuilder->expr()->orX(
                             $queryBuilder->expr()->eq(
                                 $this->tableName . '.' . $this->slugFieldName,
-                                $queryBuilder->createNamedParameter('', \PDO::PARAM_STR)
+                                $queryBuilder->createNamedParameter('')
                             ),
                             $queryBuilder->expr()->isNull($this->tableName . '.' . $this->slugFieldName)
                         ),
@@ -150,16 +142,16 @@ class SlugService
                         ),
                         $queryBuilder->expr()->eq(
                             'tx_realurl_uniqalias.tablename',
-                            $queryBuilder->createNamedParameter($this->tableName, \PDO::PARAM_STR)
+                            $queryBuilder->createNamedParameter($this->tableName)
                         ),
                         $queryBuilder->expr()->orX(
                             $queryBuilder->expr()->eq(
                                 'tx_realurl_uniqalias.expire',
-                                $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)
+                                $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)
                             ),
                             $queryBuilder->expr()->gte(
                                 'tx_realurl_uniqalias.expire',
-                                $queryBuilder->createNamedParameter($GLOBALS['ACCESS_TIME'], \PDO::PARAM_INT)
+                                $queryBuilder->createNamedParameter($GLOBALS['ACCESS_TIME'], Connection::PARAM_INT)
                             )
                         )
                     )
@@ -209,7 +201,7 @@ class SlugService
                         $queryBuilder->expr()->orX(
                             $queryBuilder->expr()->eq(
                                 $this->tableName . '.' . $this->slugFieldName,
-                                $queryBuilder->createNamedParameter('', \PDO::PARAM_STR)
+                                $queryBuilder->createNamedParameter('')
                             ),
                             $queryBuilder->expr()->isNull($this->tableName . '.' . $this->slugFieldName)
                         ),
@@ -219,16 +211,16 @@ class SlugService
                         ),
                         $queryBuilder->expr()->eq(
                             'tx_realurl_uniqalias.tablename',
-                            $queryBuilder->createNamedParameter($this->tableName, \PDO::PARAM_STR)
+                            $queryBuilder->createNamedParameter($this->tableName)
                         ),
                         $queryBuilder->expr()->orX(
                             $queryBuilder->expr()->eq(
                                 'tx_realurl_uniqalias.expire',
-                                $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)
+                                $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)
                             ),
                             $queryBuilder->expr()->gte(
                                 'tx_realurl_uniqalias.expire',
-                                $queryBuilder->createNamedParameter($GLOBALS['ACCESS_TIME'], \PDO::PARAM_INT)
+                                $queryBuilder->createNamedParameter($GLOBALS['ACCESS_TIME'], Connection::PARAM_INT)
                             )
                         )
                     )
@@ -243,7 +235,7 @@ class SlugService
                     ->where(
                         $queryBuilder->expr()->eq(
                             'uid',
-                            $queryBuilder->createNamedParameter($record['uid'], \PDO::PARAM_INT)
+                            $queryBuilder->createNamedParameter($record['uid'], Connection::PARAM_INT)
                         )
                     )
                     ->set($this->slugFieldName, $slug);

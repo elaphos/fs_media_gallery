@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MiniFranske\FsMediaGallery\ViewHelpers\Embed;
 
 /*                                                                        *
@@ -71,7 +74,7 @@ class JavaScriptViewHelper extends AbstractViewHelper
 
         if (!empty($this->arguments['moveToFooter']) && $this->getApplicationType() === 'FE') {
             // add JS inline code to footer
-            $this->getPageRenderer()->addJsFooterInlineCode(
+            GeneralUtility::makeInstance(PageRenderer::class)->addJsFooterInlineCode(
                 $blockName,
                 $content,
                 $GLOBALS['TSFE']->config['config']['compressJs']
@@ -82,20 +85,6 @@ class JavaScriptViewHelper extends AbstractViewHelper
             return '<script type="text/javascript">' . $lb . '/*<![CDATA[*/' . $lb .
             '/*' . $blockName . '*/' . $lb . $content . $lb . '/*]]>*/' . $lb . '</script>';
         }
-    }
-
-    /**
-     * @return PageRenderer
-     */
-    protected function getPageRenderer() {
-        if(class_exists(\TYPO3\CMS\Core\Page\PageRenderer::class)) {
-            $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        } elseif (method_exists($GLOBALS['TSFE'], 'getPageRenderer')) {
-            $pageRenderer = $GLOBALS['TSFE']->getPageRenderer();
-        } else {
-            $pageRenderer = null;
-        }
-        return $pageRenderer;
     }
 
     /**

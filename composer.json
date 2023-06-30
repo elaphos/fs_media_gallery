@@ -20,6 +20,7 @@
     "GPL-2.0+"
   ],
   "require": {
+    "ext-mbstring": "*",
     "typo3/cms-core": "^11.4"
   },
   "autoload": {

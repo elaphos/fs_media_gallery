@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MiniFranske\FsMediaGallery\ContextMenu\ItemProviders;
 
 use MiniFranske\FsMediaGallery\Service\Utility;
@@ -13,6 +15,8 @@ class FsMediaGalleryProvider extends AbstractProvider
 {
     protected $itemsConfiguration = [];
 
+    protected ?Folder $folder = null;
+
     /**
      * @return bool
      */
@@ -20,11 +24,6 @@ class FsMediaGalleryProvider extends AbstractProvider
     {
         return $this->table === 'sys_file';
     }
-
-    /**
-     * @var Folder
-     */
-    protected $folder;
 
     /**
      * @return int
@@ -66,7 +65,6 @@ class FsMediaGalleryProvider extends AbstractProvider
             return $items;
         }
 
-        /** @var \MiniFranske\FsMediaGallery\Service\Utility $utility */
         $utility = GeneralUtility::makeInstance(Utility::class);
         $mediaFolders = $utility->getStorageFolders();
 
@@ -160,7 +158,7 @@ class FsMediaGalleryProvider extends AbstractProvider
      * @param string $languageFile
      * @return string
      */
-    protected function sL($key, $languageFile = 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf')
+    protected function sL(string $key, string $languageFile = 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf'): string
     {
         return $this->languageService->sL($languageFile . ':' . $key);
     }
