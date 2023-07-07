@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MiniFranske\FsMediaGallery\Domain\Model;
 
 /***************************************************************
@@ -25,12 +28,15 @@ namespace MiniFranske\FsMediaGallery\Domain\Model;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use DateTime;
+use TYPO3\CMS\Core\Resource\Collection\AbstractFileCollection;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Core\Resource\FileCollectionRepository;
 use MiniFranske\FsMediaGallery\Domain\Repository\MediaAlbumRepository;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
  * Media album
@@ -41,14 +47,14 @@ class MediaAlbum extends AbstractEntity
     /**
      * fileCollectionRepository
      *
-     * @var \TYPO3\CMS\Core\Resource\FileCollectionRepository
+     * @var FileCollectionRepository
      */
     protected $fileCollectionRepository;
 
     /**
      * mediaAlbumRepository
      *
-     * @var \MiniFranske\FsMediaGallery\Domain\Repository\MediaAlbumRepository
+     * @var MediaAlbumRepository
      */
     protected $mediaAlbumRepository;
 
@@ -98,19 +104,19 @@ class MediaAlbum extends AbstractEntity
     /**
      * Title
      *
-     * @var \string
+     * @var string
      */
     protected $title;
 
     /**
      * Description visible online
      *
-     * @var \string
+     * @var string
      */
     protected $webdescription;
 
     /**
-     * @var \MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum|NULL
+     * @var MediaAlbum|null
      * @TYPO3\CMS\Extbase\Annotation\ORM\Lazy
      */
     protected $parentalbum;
@@ -125,13 +131,13 @@ class MediaAlbum extends AbstractEntity
     /**
      * Child albums
      *
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum>
+     * @var ObjectStorage<MediaAlbum>
      * @TYPO3\CMS\Extbase\Annotation\ORM\Lazy
      */
     public $albumCache;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $datetime;
 
@@ -290,9 +296,9 @@ class MediaAlbum extends AbstractEntity
     /**
      * Set parentalbum
      *
-     * @param \MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum $parentalbum
+     * @param MediaAlbum $parentalbum
      */
-    public function setParentalbum(\MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum $parentalbum)
+    public function setParentalbum(MediaAlbum $parentalbum)
     {
         $this->parentalbum = $parentalbum;
     }
@@ -300,7 +306,7 @@ class MediaAlbum extends AbstractEntity
     /**
      * Get parentalbum
      *
-     * @return \MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum
+     * @return MediaAlbum
      */
     public function getParentalbum()
     {
@@ -314,7 +320,7 @@ class MediaAlbum extends AbstractEntity
     {
         if ($this->assetCache === null) {
             try {
-                /** @var $fileCollection \TYPO3\CMS\Core\Resource\Collection\AbstractFileCollection */
+                /** @var $fileCollection AbstractFileCollection */
                 $fileCollection = $this->fileCollectionRepository->findByUid($this->getUid());
                 $fileCollection->loadContents();
                 $files = $fileCollection->getItems();
@@ -351,7 +357,7 @@ class MediaAlbum extends AbstractEntity
      */
     public function getAssetByUid($assetUid)
     {
-        foreach ($assets = $this->getAssets() as $asset) {
+        foreach ($this->getAssets() as $asset) {
             /** @var $asset File|FileReference */
             if ((int)$assetUid === (int)$asset->getUid()) {
                 return $asset;
@@ -370,7 +376,7 @@ class MediaAlbum extends AbstractEntity
     {
         $previous = $last = $current = $next = null;
 
-        foreach ($assets = $this->getAssets() as $asset) {
+        foreach ($this->getAssets() as $asset) {
             if ($current !== null) {
                 $next = $asset;
                 break;
@@ -394,7 +400,7 @@ class MediaAlbum extends AbstractEntity
     {
         trigger_error('MediaAlbum::getAssetsUid is deprecated and will be removed with next major version 2.*. Use getAssets() as this method can not handle static file collections', E_USER_DEPRECATED);
         $assetsUids = [];
-        foreach ($assets = $this->getAssets() as $asset) {
+        foreach ($this->getAssets() as $asset) {
             /** @var $asset FileInterface */
             $assetsUids[] = $asset->getUid();
         }
@@ -417,12 +423,12 @@ class MediaAlbum extends AbstractEntity
     /**
      * Get child albums
      *
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum>>
+     * @return ObjectStorage<MediaAlbum>>
      */
     public function getAlbums()
     {
         if ($this->albumCache === null) {
-            $this->albumCache = $this->mediaAlbumRepository->findByParentalbum($this, $this->excludeEmptyAlbums);
+            $this->albumCache = $this->mediaAlbumRepository->findByParentAlbum($this, $this->excludeEmptyAlbums);
         }
         return $this->albumCache;
     }
@@ -443,14 +449,12 @@ class MediaAlbum extends AbstractEntity
      */
     public function getMainAsset()
     {
-        $mainAsset = null;
         if ($this->mainAsset) {
-            $mainAsset = $this->mainAsset->getOriginalResource();
-        } else {
-            $assets = $this->getAssets();
-            $mainAsset = $assets !== [] ? $assets[0] : null;
+            return $this->mainAsset->getOriginalResource();
         }
-        return $mainAsset;
+
+        $assets = $this->getAssets();
+        return $assets !== [] ? $assets[0] : null;
     }
 
     /**
@@ -477,7 +481,7 @@ class MediaAlbum extends AbstractEntity
     /**
      * Get datetime
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDatetime()
     {
@@ -487,7 +491,7 @@ class MediaAlbum extends AbstractEntity
     /**
      * Set date time
      *
-     * @param \DateTime $datetime datetime
+     * @param DateTime $datetime datetime
      * @return void
      */
     public function setDatetime($datetime)

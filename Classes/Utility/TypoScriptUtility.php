@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MiniFranske\FsMediaGallery\Utility;
 
 /*                                                                        *
@@ -95,8 +98,7 @@ class TypoScriptUtility implements SingletonInterface
     {
         $this->setValueByReference($array, $path, $value);
 
-        $final = array_merge_recursive([], $array);
-        return $final;
+        return array_merge_recursive([], $array);
     }
 
     /**

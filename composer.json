@@ -20,6 +20,7 @@
     "GPL-2.0+"
   ],
   "require": {
+    "ext-mbstring": "*",
     "typo3/cms-backend": "^11.5",
     "typo3/cms-frontend": "^11.5",
     "georgringer/numbered-pagination": "^1.0.5"

@@ -7,25 +7,13 @@ use TYPO3\CMS\Core\Pagination\AbstractPaginator;
 
 class ExtendedArrayPaginator extends AbstractPaginator
 {
-    /**
-     * @var array
-     */
-    private $items;
+    private array $items;
 
-    /**
-     * @var array
-     */
-    private $paginatedItems = [];
+    private array $paginatedItems = [];
 
-    /**
-     * @var array
-     */
-    private $itemsBefore = [];
+    private array $itemsBefore = [];
 
-    /**
-     * @var array
-     */
-    private $itemsAfter = [];
+    private array $itemsAfter = [];
 
     public function __construct(
         array $items,

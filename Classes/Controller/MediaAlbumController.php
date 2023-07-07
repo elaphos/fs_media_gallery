@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MiniFranske\FsMediaGallery\Controller;
 
 /***************************************************************
@@ -47,13 +49,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 class MediaAlbumController extends ActionController
 {
-
-    /**
-     * mediaAlbumRepository
-     *
-     * @var \MiniFranske\FsMediaGallery\Domain\Repository\MediaAlbumRepository
-     */
-    protected $mediaAlbumRepository;
+    protected MediaAlbumRepository $mediaAlbumRepository;
 
     /**
      * Injects the Configuration Manager
@@ -76,7 +72,6 @@ class MediaAlbumController extends ActionController
 
         // merge Framework (TypoScript) and Flexform settings
         if (isset($frameworkSettings['settings']['overrideFlexformSettingsIfEmpty'])) {
-            /** @var $typoScriptUtility \MiniFranske\FsMediaGallery\Utility\TypoScriptUtility */
             $typoScriptUtility = GeneralUtility::makeInstance(TypoScriptUtility::class);
             $mergedSettings = $typoScriptUtility->override($flexformSettings, $frameworkSettings);
             $this->settings = $mergedSettings;
@@ -84,7 +79,7 @@ class MediaAlbumController extends ActionController
             $this->settings = $flexformSettings;
         }
 
-        /**
+        /*
          * sync persistence.storagePid=settings.startingpoint and persistence.recursive=settings.recursive
          */
         // overwrite persistence.storagePid if settings.startingpoint is defined in flexform
@@ -137,7 +132,7 @@ class MediaAlbumController extends ActionController
     /**
      * Injects the MediaAlbumRepository
      *
-     * @param \MiniFranske\FsMediaGallery\Domain\Repository\MediaAlbumRepository $mediaAlbumRepository
+     * @param MediaAlbumRepository $mediaAlbumRepository
      * @return void
      */
     public function injectMediaAlbumRepository(
@@ -189,16 +184,15 @@ class MediaAlbumController extends ActionController
      */
     public function nestedListAction(int $mediaAlbum = 0): ResponseInterface
     {
-        $mediaAlbums = null;
-        $mediaAlbum = (int)$mediaAlbum ?: null;
+        $mediaAlbumId = $mediaAlbum ?: null;
         $showBackLink = true;
 
         $this->setAlbumUidRestrictions();
 
         // Single view
-        if ($mediaAlbum) {
+        if ($mediaAlbumId) {
             /** @var MediaAlbum $mediaAlbum */
-            $mediaAlbum = $this->mediaAlbumRepository->findByUid($mediaAlbum);
+            $mediaAlbum = $this->mediaAlbumRepository->findByUid($mediaAlbumId);
             if (!$mediaAlbum) {
                 return $this->pageNotFound(LocalizationUtility::translate('no_album_found', 'fs_media_gallery'));
             }
@@ -211,7 +205,6 @@ class MediaAlbumController extends ActionController
         if ($mediaAlbum === null && $this->mediaAlbumRepository->getAlbumUids() !== []) {
             $mediaAlbums = [];
             $all = $this->mediaAlbumRepository->findAll((bool)$this->settings['list']['hideEmptyAlbums'], $this->settings['list']['orderBy'], $this->settings['list']['orderDirection']);
-            /** @var MediaAlbum $album */
             foreach ($all as $album) {
                 $parent = $album->getParentalbum();
                 if ($parent === null
@@ -224,7 +217,7 @@ class MediaAlbumController extends ActionController
                 }
             }
         } else {
-            $mediaAlbums = $this->mediaAlbumRepository->findByParentalbum($mediaAlbum,
+            $mediaAlbums = $this->mediaAlbumRepository->findByParentAlbum($mediaAlbum,
                 $this->settings['list']['hideEmptyAlbums'], $this->settings['list']['orderBy'],
                 $this->settings['list']['orderDirection']);
         }
@@ -232,7 +225,7 @@ class MediaAlbumController extends ActionController
         // when only 1 album skip gallery view
         if ($mediaAlbum === null && !empty($this->settings['list']['skipListWhenOnlyOneAlbum']) && count($mediaAlbums) === 1) {
             $mediaAlbum = $mediaAlbums[0];
-            $mediaAlbums = $this->mediaAlbumRepository->findByParentalbum($mediaAlbum,
+            $mediaAlbums = $this->mediaAlbumRepository->findByParentAlbum($mediaAlbum,
                 $this->settings['list']['hideEmptyAlbums'], $this->settings['list']['orderBy'],
                 $this->settings['list']['orderDirection']);
             $showBackLink = false;
@@ -321,7 +314,8 @@ class MediaAlbumController extends ActionController
     /**
      * Show single Album Action
      *
-     * @param int $mediaAlbum (this is not directly mapped to an object to handle 404 on our own)
+     * @param int|null $mediaAlbum (this is not directly mapped to an object to handle 404 on our own)
+     * @return ResponseInterface
      */
     public function showAlbumAction(int $mediaAlbum = null): ResponseInterface
     {
@@ -345,9 +339,10 @@ class MediaAlbumController extends ActionController
     /**
      * Show single media asset from album
      *
-     * @param \MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum $mediaAlbum
+     * @param MediaAlbum $mediaAlbum
      * @param int $mediaAssetUid
      * @TYPO3\CMS\Extbase\Annotation\IgnoreValidation("")
+     * @throws ImmediateResponseException
      */
     public function showAssetAction(MediaAlbum $mediaAlbum, int $mediaAssetUid): ResponseInterface
     {

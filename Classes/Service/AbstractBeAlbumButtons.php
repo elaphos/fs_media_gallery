@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MiniFranske\FsMediaGallery\Service;
 
 /***************************************************************
@@ -25,6 +27,7 @@ namespace MiniFranske\FsMediaGallery\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -48,9 +51,9 @@ abstract class AbstractBeAlbumButtons
     {
         $buttons = [];
 
-        // In some folder copy/move actions in file list a invalid id is passed
+        // In some folder copy/move actions in file list an invalid id is passed
         try {
-            /** @var $file \TYPO3\CMS\Core\Resource\Folder */
+            /** @var $file Folder */
             $folder = GeneralUtility::makeInstance(ResourceFactory::class)
                 ->retrieveFileOrFolderObject($combinedIdentifier);
         } catch (ResourceDoesNotExistException $exception) {
@@ -82,7 +85,7 @@ abstract class AbstractBeAlbumButtons
                             mb_strimwidth($collection['title'], 0,12, '...')
                         ),
                         $this->getIcon('edit-album'),
-                        $this->buildEditUrl($collection['uid'])
+                        (string)$this->buildEditUrl($collection['uid'])
                     );
                 }
 
@@ -106,7 +109,7 @@ abstract class AbstractBeAlbumButtons
                                 mb_strimwidth($title, 0, 12, '...')
                             ),
                             $this->getIcon('add-album'),
-                            $this->buildAddUrl($uid, $parentUid, $folder)
+                            (string)$this->buildAddUrl($uid, $parentUid, $folder)
                         );
                     }
                 }
@@ -126,7 +129,7 @@ abstract class AbstractBeAlbumButtons
         return $buttons;
     }
 
-    protected function buildEditUrl(int $mediaAlbumUid): string
+    protected function buildEditUrl(int $mediaAlbumUid): Uri
     {
         return GeneralUtility::makeInstance(UriBuilder::class)->buildUriFromRoute('record_edit', [
             'edit' => [
@@ -141,7 +144,7 @@ abstract class AbstractBeAlbumButtons
     /**
      * Build Add new media album url
      */
-    protected function buildAddUrl(int $pid, int $parentAlbumUid, Folder $folder): string
+    protected function buildAddUrl(int $pid, int $parentAlbumUid, Folder $folder): Uri
     {
         return GeneralUtility::makeInstance(UriBuilder::class)->buildUriFromRoute('record_edit', [
             'edit' => [

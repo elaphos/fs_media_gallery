@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MiniFranske\FsMediaGallery\Service;
 
 /***************************************************************
@@ -126,14 +128,15 @@ class Utility implements SingletonInterface
         $folder->getStorage()->setEvaluatePermissions(false);
 
         // If not root folder (for root folder parent === folder)
-        if ($folder->getParentFolder()->getIdentifier() !== $folder->getIdentifier()) {
+        $parentFolder = $folder->getParentFolder();
+        if ($parentFolder->getIdentifier() !== $folder->getIdentifier()) {
             $parentCollection = $this->findFileCollectionRecordsForFolder(
                 $folder->getStorage()->getUid(),
-                $folder->getParentFolder()->getIdentifier(),
+                $parentFolder->getIdentifier(),
                 [$mediaFolderUid]
             );
-            if (!count($parentCollection)) {
-                $parentCollection = $this->getFirstParentCollections($folder->getParentFolder(), $mediaFolderUid);
+            if (!count($parentCollection) && $parentFolder instanceof Folder) {
+                $parentCollection = $this->getFirstParentCollections($parentFolder, $mediaFolderUid);
             }
         }
         $folder->getStorage()->setEvaluatePermissions($evalPermissions);
@@ -159,7 +162,7 @@ class Utility implements SingletonInterface
             'sys_file_collection',
             $updatedData,
             [
-                'storage' => (int)$oldStorageUid,
+                'storage' => $oldStorageUid,
                 'folder' => $oldIdentifier,
             ]
         );
@@ -233,7 +236,7 @@ class Utility implements SingletonInterface
             ->from('sys_file_collection')
             ->where(
                 $q->expr()->andX(
-                    $q->expr()->eq('storage', $q->createNamedParameter($storageUid, \PDO::PARAM_INT)),
+                    $q->expr()->eq('storage', $q->createNamedParameter($storageUid, Connection::PARAM_INT)),
                     $q->expr()->eq('folder', $q->createNamedParameter($folder))
                 )
             );

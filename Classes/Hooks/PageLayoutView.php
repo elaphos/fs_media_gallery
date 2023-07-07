@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MiniFranske\FsMediaGallery\Hooks;
 
 /*
@@ -101,10 +104,10 @@ class PageLayoutView
     private function addSelectedAlbumToSettingsSummary(): void
     {
         $albumUid = (int)$this->getFieldFromFlexform('settings.mediaAlbum');
-        if ((int)$albumUid > 0) {
+        if ($albumUid > 0) {
             // Album record
             $rowSysFileCollectionRecords = $this->getDatabaseConnection()->select(['*'], 'sys_file_collection', [
-                'uid' => (int)$albumUid,
+                'uid' => $albumUid,
                 'deleted' => 0,
             ])->fetchAllAssociative();
 
@@ -153,7 +156,7 @@ class PageLayoutView
 
             $rowSysFileCollectionRecords = $q->execute()->fetchAllAssociative();
 
-            foreach ((array)$rowSysFileCollectionRecords as $record) {
+            foreach ($rowSysFileCollectionRecords as $record) {
                 $albums[] = htmlspecialchars(BackendUtilityCore::getRecordTitle('sys_file_collection', $record));
             }
 
@@ -183,7 +186,7 @@ class PageLayoutView
 
             $rawPagesRecords = $q->execute()->fetchAllAssociative();
 
-            foreach ((array)$rawPagesRecords as $page) {
+            foreach ($rawPagesRecords as $page) {
                 $pagesOut[] = htmlspecialchars(BackendUtilityCore::getRecordTitle('pages',
                         $page)) . ' (' . $page['uid'] . ')';
             }
