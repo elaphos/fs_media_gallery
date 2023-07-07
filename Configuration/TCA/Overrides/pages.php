@@ -1,5 +1,5 @@
 <?php
-defined('TYPO3_MODE') || die();
+defined('TYPO3') || die('not TYPO3 env');
 
 
 $GLOBALS['TCA']['pages']['ctrl']['typeicon_classes']['contains-mediagal'] =
