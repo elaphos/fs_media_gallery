@@ -331,7 +331,9 @@ class MediaAlbumController extends ActionController
         $mediaAlbum = $this->mediaAlbumRepository->findByUid($mediaAlbum, $respectStorage);
         $this->view->assign('mediaAlbum', $mediaAlbum);
         $this->view->assign('showBackLink', false);
-        $this->view->assign('mediaAlbumPagination', $this->getAlbumPagination($mediaAlbum));
+        if ($mediaAlbum) {
+            $this->view->assign('mediaAlbumPagination', $this->getAlbumPagination($mediaAlbum));
+        }
 
         return $this->htmlResponse();
     }
