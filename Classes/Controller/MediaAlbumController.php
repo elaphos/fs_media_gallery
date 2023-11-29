@@ -306,7 +306,7 @@ class MediaAlbumController extends ActionController
         // get all request arguments (e.g. pagination widget)
         $arguments = $this->request->getArguments();
         // set album id from settings
-        $arguments['mediaAlbum'] = $this->settings['mediaAlbum'];
+        $arguments['mediaAlbum'] = $this->settings['mediaAlbum'] ?? null;
 
         return (new ForwardResponse('showAlbum'))->withArguments($arguments);
     }
@@ -321,11 +321,11 @@ class MediaAlbumController extends ActionController
     {
         $mediaAlbum = (int)$mediaAlbum ?: null;
         if (empty($mediaAlbum)) {
-            $mediaAlbum = (int)$this->settings['mediaAlbum'];
+            $mediaAlbum = (int)($this->settings['mediaAlbum'] ?? 0);
         }
         // if album uid is set through settings (typoscript or flexform) we skip the storage check
         $respectStorage = true;
-        if ((int)$this->settings['mediaAlbum'] === (int)$mediaAlbum) {
+        if ((int)($this->settings['mediaAlbum'] ?? 0) === (int)$mediaAlbum) {
             $respectStorage = false;
         }
         $mediaAlbum = $this->mediaAlbumRepository->findByUid($mediaAlbum, $respectStorage);
