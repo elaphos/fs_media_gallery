@@ -1,16 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MiniFranske\FsMediaGallery\ContextMenu\ItemProviders;
 
 use MiniFranske\FsMediaGallery\Service\Utility;
 use TYPO3\CMS\Backend\ContextMenu\ItemProviders\AbstractProvider;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class FsMediaGalleryProvider extends AbstractProvider
 {
     protected $itemsConfiguration = [];
+
+    protected ?Folder $folder = null;
 
     /**
      * @return bool
@@ -19,11 +24,6 @@ class FsMediaGalleryProvider extends AbstractProvider
     {
         return $this->table === 'sys_file';
     }
-
-    /**
-     * @var Folder
-     */
-    protected $folder;
 
     /**
      * @return int
@@ -44,7 +44,7 @@ class FsMediaGalleryProvider extends AbstractProvider
         if ($resource instanceof Folder
             && in_array(
                 $resource->getRole(),
-                [Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD],
+                [FolderInterface::ROLE_DEFAULT, FolderInterface::ROLE_USERUPLOAD],
                 true
             )
         ) {
@@ -65,7 +65,6 @@ class FsMediaGalleryProvider extends AbstractProvider
             return $items;
         }
 
-        /** @var \MiniFranske\FsMediaGallery\Service\Utility $utility */
         $utility = GeneralUtility::makeInstance(Utility::class);
         $mediaFolders = $utility->getStorageFolders();
 
@@ -104,7 +103,7 @@ class FsMediaGalleryProvider extends AbstractProvider
                     $parents = $utility->findFileCollectionRecordsForFolder(
                         $this->folder->getStorage()->getUid(),
                         $this->folder->getParentFolder()->getIdentifier(),
-                        $uid
+                        [$uid]
                     );
 
                     // If parent(s) found we take the first one
@@ -146,7 +145,7 @@ class FsMediaGalleryProvider extends AbstractProvider
             'data-album-record-uid' => $itemInfo['uid'] ?? 0,
             'data-pid' => $itemInfo['pid'] ?? 0,
             'data-parent-uid' => $itemInfo['parentUid'] ?? 0,
-            'data-title' => $itemInfo['title'] ?? $this->folder->getName(),
+            'data-title' => $itemInfo['title'] ?? ucfirst(trim(str_replace('_', ' ', $this->folder->getName()))),
             'data-storage' => $this->folder->getStorage()->getUid(),
             'data-folder' => $this->folder->getIdentifier(),
         ];
@@ -159,7 +158,7 @@ class FsMediaGalleryProvider extends AbstractProvider
      * @param string $languageFile
      * @return string
      */
-    protected function sL($key, $languageFile = 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf')
+    protected function sL(string $key, string $languageFile = 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf'): string
     {
         return $this->languageService->sL($languageFile . ':' . $key);
     }

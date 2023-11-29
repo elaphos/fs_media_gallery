@@ -1,5 +1,5 @@
 <?php
-defined('TYPO3_MODE') || die();
+defined('TYPO3') || die('not TYPO3 env');
 
 $additionalColumns = [
     'datetime' => [
@@ -93,7 +93,7 @@ $additionalColumns = [
 foreach ($GLOBALS['TCA']['sys_file_collection']['types'] as $type => $tmp) {
     $GLOBALS['TCA']['sys_file_collection']['types'][$type]['showitem'] .= ',--div--;LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_db.xlf:tx_fsmediagallery_domain_model_mediaalbum';
     // try to add field datetime before type (after title)
-    if ($replacedTca = preg_replace('/(\s*)type(\s*)(;|,)/', 'datetime,type$3',
+    if ($replacedTca = preg_replace('/(\s*)type(\s*)([;,])/', 'datetime,type$3',
         $GLOBALS['TCA']['sys_file_collection']['types'][$type]['showitem'])
     ) {
         $GLOBALS['TCA']['sys_file_collection']['types'][$type]['showitem'] = $replacedTca;

@@ -15,21 +15,20 @@
 					<div class="description"><f:format.html>{mediaAlbum.webdescription}</f:format.html></div>
 					<f:if condition="{mediaAlbums}">
 						<f:then>
-							<f:render partial="MediaAlbum/NestedList/AlbumsList" section="AlbumsList" arguments="{mediaAlbums:mediaAlbums}" />
+							<f:render partial="MediaAlbum/NestedList/AlbumsList" section="AlbumsList" arguments="{mediaAlbums:mediaAlbums, mediaAlbumsPagination: mediaAlbumsPagination}" />
 						</f:then>
 					</f:if>
-					<mf:widget.paginate objects="{mediaAlbum.assets}" as="paginatedAssets" widgetId="assets" itemsBefore="before" itemsAfter="after" configuration="{itemsPerPage:settings.album.pagination.itemsPerPage, insertAbove:settings.album.pagination.insertAbove, insertBelow:settings.album.pagination.insertBelow, maximumNumberOfLinks:settings.album.pagination.maximumNumberOfLinks, pagesBefore:settings.album.pagination.pagesBefore, pagesAfter:settings.album.pagination.pagesAfter}">
+
+					<f:render partial="AlbumPagination" contentAs="content" arguments="{pagination: mediaAlbumPagination, mediaAlbum: mediaAlbum}">
 						<f:if condition="{settings.album.lightbox.enable}">
-							<f:if condition="{before}">
-								<f:for each="{before}" as="mediaAsset">
-									<a href="{f:uri.image(image:mediaAsset, width:'{settings.album.lightbox.asset.width}{settings.album.lightbox.asset.resizeMode}', height:'{settings.album.lightbox.asset.height}{settings.album.lightbox.asset.resizeMode}')}" rel="{settings.album.lightbox.relPrefix}{mediaAlbum.uid}" class="{settings.album.lightbox.styleClass} {settings.album.lightbox.styleClass}-{mediaAlbum.uid}" title="{mf:fileTitle(file:mediaAsset)} - {mediaAlbum.title}"></a>
-								</f:for>
-							</f:if>
+							<f:for each="{mediaAlbumPagination.paginator.itemsBefore}" as="mediaAsset">
+								<a href="{f:uri.image(image:mediaAsset, width:'{settings.album.lightbox.asset.width}{settings.album.lightbox.asset.resizeMode}', height:'{settings.album.lightbox.asset.height}{settings.album.lightbox.asset.resizeMode}')}" rel="{settings.album.lightbox.relPrefix}{mediaAlbum.uid}" class="{settings.album.lightbox.styleClass} {settings.album.lightbox.styleClass}-{mediaAlbum.uid}" title="{mf:fileTitle(file:mediaAsset)} - {mediaAlbum.title}"></a>
+							</f:for>
 						</f:if>
-						<f:if condition="{paginatedAssets}">
+						<f:if condition="{mediaAlbumPagination.paginator.paginatedItems}">
 							<f:then>
 								<div class="thumbs thumbs-assets clearfix">
-									<f:for each="{paginatedAssets}" as="mediaAsset">
+									<f:for each="{mediaAlbumPagination.paginator.paginatedItems}" as="mediaAsset">
 										<f:render partial="MediaAsset/Thumb" section="Thumb" arguments="{mediaAlbum:mediaAlbum,mediaAsset:mediaAsset}" />
 									</f:for>
 								</div>
@@ -45,13 +44,11 @@
 							</f:else>
 						</f:if>
 						<f:if condition="{settings.album.lightbox.enable}">
-							<f:if condition="{after}">
-								<f:for each="{after}" as="mediaAsset">
-									<a href="{f:uri.image(image:mediaAsset, width:'{settings.album.lightbox.asset.width}{settings.album.lightbox.asset.resizeMode}', height:'{settings.album.lightbox.asset.height}{settings.album.lightbox.asset.resizeMode}')}" rel="{settings.album.lightbox.relPrefix}{mediaAlbum.uid}" class="{settings.album.lightbox.styleClass} {settings.album.lightbox.styleClass}-{mediaAlbum.uid}" title="{mf:fileTitle(file:mediaAsset)} - {mediaAlbum.title}"></a>
-								</f:for>
-							</f:if>
+							<f:for each="{mediaAlbumPagination.paginator.itemsAfter}" as="mediaAsset">
+								<a href="{f:uri.image(image:mediaAsset, width:'{settings.album.lightbox.asset.width}{settings.album.lightbox.asset.resizeMode}', height:'{settings.album.lightbox.asset.height}{settings.album.lightbox.asset.resizeMode}')}" rel="{settings.album.lightbox.relPrefix}{mediaAlbum.uid}" class="{settings.album.lightbox.styleClass} {settings.album.lightbox.styleClass}-{mediaAlbum.uid}" title="{mf:fileTitle(file:mediaAsset)} - {mediaAlbum.title}"></a>
+							</f:for>
 						</f:if>
-					</mf:widget.paginate>
+					</f:render>
 					<f:if condition="{showBackLink}">
 						<div class="navigation">
 							<f:if condition="{parentAlbum}">
@@ -70,7 +67,7 @@
 				</f:if>
 			</f:then>
 			<f:else>
-				<f:render partial="MediaAlbum/NestedList/AlbumsList" section="AlbumsList" arguments="{mediaAlbums:mediaAlbums}" />
+				<f:render partial="MediaAlbum/NestedList/AlbumsList" section="AlbumsList" arguments="{mediaAlbums:mediaAlbums, mediaAlbumsPagination: mediaAlbumsPagination}" />
 			</f:else>
 		</f:if>
 	</f:section>

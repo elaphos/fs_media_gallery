@@ -65,7 +65,7 @@ define(['jquery', 'TYPO3/CMS/Backend/Modal', 'TYPO3/CMS/Backend/Severity'], func
     };
 
     ContextMenuActions.getReturnUrl = function () {
-        return top.rawurlencode(top.list_frame.document.location.pathname + top.list_frame.document.location.search);
+        return encodeURIComponent(top.list_frame.document.location.pathname + top.list_frame.document.location.search);
     };
 
     return ContextMenuActions;

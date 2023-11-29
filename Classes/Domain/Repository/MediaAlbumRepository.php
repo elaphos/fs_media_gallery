@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MiniFranske\FsMediaGallery\Domain\Repository;
 
 /***************************************************************
@@ -25,6 +28,8 @@ namespace MiniFranske\FsMediaGallery\Domain\Repository;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException;
+use TYPO3\CMS\Extbase\Persistence\Generic\Query;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum;
@@ -172,12 +177,12 @@ class MediaAlbumRepository extends Repository
      * Get random sub album
      *
      * @param MediaAlbum|bool $parent parent MediaAlbum, FALSE for parent = 0 or NULL for no restriction by parent
-     * @return \MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum|NULL
+     * @return MediaAlbum|null
      */
     public function findRandom($parent = null)
     {
 
-        /** @var \TYPO3\CMS\Extbase\Persistence\Generic\Query $query */
+        /** @var Query $query */
         $query = $this->createQuery();
         $constraints = [];
 
@@ -194,10 +199,10 @@ class MediaAlbumRepository extends Repository
                 $constraints[] = $query->in('uid', $this->albumUids);
             }
         }
-        $query->matching($query->logicalAnd($constraints));
+        $query->matching($query->logicalAnd(...$constraints));
         $mediaAlbums = $query->execute()->toArray();
 
-        /** @var \MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum $mediaAlbum */
+        /** @var MediaAlbum $mediaAlbum */
         $mediaAlbum = null;
 
         if ($mediaAlbums) {
@@ -216,11 +221,12 @@ class MediaAlbumRepository extends Repository
     /**
      * Find albums by parent album
      *
-     * @param MediaAlbum $parentAlbum
+     * @param MediaAlbum|null $parentAlbum
      * @param boolean $excludeEmptyAlbums
      * @param string $orderBy Sort albums by: datetime|crdate|sorting
      * @param string $orderDirection Sort order: asc|desc
      * @return MediaAlbum[]
+     * @throws InvalidQueryException
      */
     public function findByParentAlbum(
         MediaAlbum $parentAlbum = null,
@@ -246,7 +252,7 @@ class MediaAlbumRepository extends Repository
         $mediaAlbums = $query->execute()->toArray();
 
         foreach ($mediaAlbums as $key => $mediaAlbum) {
-            /** @var $mediaAlbum \MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum */
+            /** @var $mediaAlbum MediaAlbum */
             // set allowed asset mime types
             $mediaAlbum->setAllowedMimeTypes($this->allowedAssetMimeTypes);
             // set assets order
@@ -297,7 +303,7 @@ class MediaAlbumRepository extends Repository
             }
         }
 
-        /** @var $mediaAlbum \MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum */
+        /** @var $mediaAlbum MediaAlbum */
         $mediaAlbum = $query->matching($query->logicalAnd($constraints))->execute()->getFirst();
 
         if ($mediaAlbum) {
@@ -337,7 +343,7 @@ class MediaAlbumRepository extends Repository
         $mediaAlbums = $query->execute()->toArray();
 
         foreach ($mediaAlbums as $key => $mediaAlbum) {
-            /** @var $mediaAlbum \MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum */
+            /** @var $mediaAlbum MediaAlbum */
             // set allowed asset mime types
             $mediaAlbum->setAllowedMimeTypes($this->allowedAssetMimeTypes);
             // set assets order

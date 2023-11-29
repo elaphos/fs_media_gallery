@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MiniFranske\FsMediaGallery\ViewHelpers\Embed;
 
 /*                                                                        *
@@ -11,6 +14,8 @@ namespace MiniFranske\FsMediaGallery\ViewHelpers\Embed;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
@@ -67,9 +72,9 @@ class JavaScriptViewHelper extends AbstractViewHelper
             $blockName = (string)$this->arguments['name'];
         }
 
-        if (!empty($this->arguments['moveToFooter']) && TYPO3_MODE === 'FE') {
+        if (!empty($this->arguments['moveToFooter']) && $this->getApplicationType() === 'FE') {
             // add JS inline code to footer
-            $this->getPageRenderer()->addJsFooterInlineCode(
+            GeneralUtility::makeInstance(PageRenderer::class)->addJsFooterInlineCode(
                 $blockName,
                 $content,
                 $GLOBALS['TSFE']->config['config']['compressJs']
@@ -83,16 +88,19 @@ class JavaScriptViewHelper extends AbstractViewHelper
     }
 
     /**
-     * @return PageRenderer
+     * String 'FE' if in FrontendApplication, 'BE' otherwise (also in CLI without request object)
+     *
+     * @internal
      */
-    protected function getPageRenderer() {
-        if(class_exists(\TYPO3\CMS\Core\Page\PageRenderer::class)) {
-            $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        } elseif (method_exists($GLOBALS['TSFE'], 'getPageRenderer')) {
-            $pageRenderer = $GLOBALS['TSFE']->getPageRenderer();
-        } else {
-            $pageRenderer = null;
+    public function getApplicationType(): string
+    {
+        if (
+            ($GLOBALS['TYPO3_REQUEST'] ?? null) instanceof ServerRequestInterface &&
+            ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend()
+        ) {
+            return 'FE';
         }
-        return $pageRenderer;
+
+        return 'BE';
     }
 }

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MiniFranske\FsMediaGallery\Hooks;
 
 /***************************************************************
@@ -43,7 +46,6 @@ class BackendControllerHook
     public function addJavaScript(array $configuration, BackendController $backendController)
     {
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        /** @var \TYPO3\CMS\Backend\Routing\UriBuilder $uriBuilder */
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $pageRenderer->addInlineSetting('FileEdit', 'moduleUrl', (string)$uriBuilder->buildUriFromRoute('file_edit'));
         $pageRenderer->addInlineSetting('FileCreate', 'moduleUrl', (string)$uriBuilder->buildUriFromRoute('file_upload'));

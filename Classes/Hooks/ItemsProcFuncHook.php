@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MiniFranske\FsMediaGallery\Hooks;
 
 /*                                                                        *
@@ -35,7 +38,7 @@ class ItemsProcFuncHook
             'showAlbumByConfig' => 'MediaAlbum->showAlbumByConfig;MediaAlbum->showAsset',
             'randomAsset' => 'MediaAlbum->randomAsset',
         ];
-        $extConf = $this->getExtensionConfiguration();;
+        $extConf = $this->getExtensionConfiguration();
         $allowedActions = [
             // index action is always allowed
             // this is needed to make sure the correct tabs/fields are shown in
@@ -70,11 +73,11 @@ class ItemsProcFuncHook
     public function getItemsForListOrderBy(array &$config)
     {
         $availableOptions = ['datetime', 'crdate', 'sorting'];
-        $extConf = $this->getExtensionConfiguration();;
+        $extConf = $this->getExtensionConfiguration();
         $allowedOptions = [];
         $allowedOptionsFromExtConf = [];
-        if (!empty($extConf['list.']['orderOptions'])) {
-            $allowedOptionsFromExtConf = GeneralUtility::trimExplode(',', $extConf['list.']['orderOptions']);
+        if (!empty($extConf['list']['orderOptions'])) {
+            $allowedOptionsFromExtConf = GeneralUtility::trimExplode(',', $extConf['list']['orderOptions']);
         }
         foreach ($allowedOptionsFromExtConf as $allowedOptionFromExtConf) {
             if (in_array($allowedOptionFromExtConf, $availableOptions)) {
@@ -100,13 +103,13 @@ class ItemsProcFuncHook
         // default set
         $allowedOptions = ['name', 'crdate', 'title', 'content_creation_date', 'content_modification_date'];
         $availableOptions = [];
-        $extConf = $this->getExtensionConfiguration();;
+        $extConf = $this->getExtensionConfiguration();
 
-        if (!empty($extConf['asset.']['orderOptions'])) {
-            $allowedOptions = GeneralUtility::trimExplode(',', $extConf['asset.']['orderOptions']);
+        if (!empty($extConf['asset']['orderOptions'])) {
+            $allowedOptions = GeneralUtility::trimExplode(',', $extConf['asset']['orderOptions']);
         }
         // check if field exists in TCA of sys_file or sys_file_metadata
-        foreach ($allowedOptions as $key => $option) {
+        foreach ($allowedOptions as $option) {
             if (
                 $option === 'crdate'
                 ||
@@ -130,9 +133,8 @@ class ItemsProcFuncHook
     /**
      * Get extension configuration
      */
-    protected function getExtensionConfiguration() {
-        return GeneralUtility::makeInstance(
-            ExtensionConfiguration::class
-        )->get('fs_media_gallery');
+    protected function getExtensionConfiguration()
+    {
+        return GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('fs_media_gallery');
     }
 }

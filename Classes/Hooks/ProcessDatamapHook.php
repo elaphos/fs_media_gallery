@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MiniFranske\FsMediaGallery\Hooks;
 
 /***************************************************************
@@ -40,7 +43,7 @@ class ProcessDatamapHook
      * @param string $table
      * @param $id
      * @param array $fieldArray
-     * @param \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler
+     * @param DataHandler $dataHandler
      */
     public function processDatamap_afterDatabaseOperations(
         $status,
@@ -61,7 +64,7 @@ class ProcessDatamapHook
      * @param string $table
      * @param int $id
      * @param mixed $value
-     * @param \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler
+     * @param DataHandler $dataHandler
      * @param mixed $pasteUpdate
      * @param array $pasteDatamap
      */

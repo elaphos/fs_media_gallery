@@ -20,6 +20,8 @@ Please follow the link to know which bugs have been fixed in which version.
 List of versions
 ----------------
 
+   `3.3.0 <https://bitbucket.org/franssaris/fs_media_gallery/commits/tag/3.0.0>`_
+   `2.2.1 <https://bitbucket.org/franssaris/fs_media_gallery/commits/tag/2.2.1>`_
    `2.2.0 <https://bitbucket.org/franssaris/fs_media_gallery/commits/tag/2.2.0>`_
    `2.1.1 <https://bitbucket.org/franssaris/fs_media_gallery/commits/tag/2.1.1>`_
    `2.1.0 <https://bitbucket.org/franssaris/fs_media_gallery/commits/tag/2.1.0>`_

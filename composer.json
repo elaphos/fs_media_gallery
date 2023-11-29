@@ -20,20 +20,19 @@
     "GPL-2.0+"
   ],
   "require": {
-    "typo3/cms-core": "^9.5 || ^10.4"
+    "ext-mbstring": "*",
+    "typo3/cms-backend": "^11.5",
+    "typo3/cms-frontend": "^11.5",
+    "georgringer/numbered-pagination": "^1.0.5"
   },
   "autoload": {
     "psr-4": {
       "MiniFranske\\FsMediaGallery\\": "Classes/"
     }
   },
-  "replace": {
-
-    "typo3-ter/fs-media-gallery": "self.version"
-  },
   "extra": {
     "branch-alias": {
-      "dev-master": "2.1.x-dev"
+      "dev-master": "3.0.x-dev"
     },
     "typo3/cms": {
       "extension-key": "fs_media_gallery"

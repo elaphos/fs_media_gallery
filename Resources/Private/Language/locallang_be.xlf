@@ -201,10 +201,10 @@
 			-->
 
 			<trans-unit id="module.buttons.createAlbum">
-				<source>Create album</source>
+				<source>Turn into album</source>
 			</trans-unit>
 			<trans-unit id="module.buttons.createAlbumIn">
-				<source>Create album in "%s"</source>
+				<source>Turn into album (add to "%s")</source>
 			</trans-unit>
 			<trans-unit id="module.buttons.editAlbum">
 				<source>Edit album "%s"</source>
