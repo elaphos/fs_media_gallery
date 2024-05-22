@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 /*
- * Copyright (C) 2024 Christian Racan
- * ----------------------------------------------
- * new version of sf_media_gallery for TYPO3 v12
+ * (c) 2024 rc design visual concepts (rc-design.at)
+ * _________________________________________________
  * The TYPO3 project - inspiring people to share!
- * ----------------------------------------------
+ * _________________________________________________
  */
 
 namespace MiniFranske\FsMediaGallery\Utility;
@@ -28,7 +27,7 @@ use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * TypoScript Utility class
+ * TypoScript Utility class.
  */
 class TypoScriptUtility implements SingletonInterface
 {
@@ -64,7 +63,7 @@ class TypoScriptUtility implements SingletonInterface
     }
 
     /**
-     * Get value from array by path
+     * Get value from array by path.
      *
      * @return array|null
      */
@@ -89,10 +88,11 @@ class TypoScriptUtility implements SingletonInterface
     }
 
     /**
-     * Set value in array by path
+     * Set value in array by path.
      *
      * @param $path
      * @param $value
+     *
      * @return array
      */
     protected function setValue(array $array, $path, $value)
@@ -103,11 +103,11 @@ class TypoScriptUtility implements SingletonInterface
     }
 
     /**
-     * Set value by reference
+     * Set value by reference.
      *
      * @param $value
      */
-    private function setValueByReference(array &$array, array $path, $value)
+    private function setValueByReference(array &$array, array $path, $value): void
     {
         while (count($path) > 1) {
             $key = array_shift($path);

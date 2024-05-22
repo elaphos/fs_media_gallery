@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 /*
- * Copyright (C) 2024 Christian Racan
- * ----------------------------------------------
- * new version of sf_media_gallery for TYPO3 v12
+ * (c) 2024 rc design visual concepts (rc-design.at)
+ * _________________________________________________
  * The TYPO3 project - inspiring people to share!
- * ----------------------------------------------
+ * _________________________________________________
  */
 
 namespace MiniFranske\FsMediaGallery\EventListener;
@@ -18,7 +19,7 @@ use TYPO3\CMS\Core\Imaging\Icon;
 
 class DocHeaderButtonsEventListener extends AbstractBeAlbumButtons
 {
-    public function __invoke(ModifyButtonBarEvent $event)
+    public function __invoke(ModifyButtonBarEvent $event): void
     {
         $buttons = $event->getButtons();
 

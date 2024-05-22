@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 /*
- * Copyright (C) 2024 Christian Racan
- * ----------------------------------------------
- * new version of sf_media_gallery for TYPO3 v12
+ * (c) 2024 rc design visual concepts (rc-design.at)
+ * _________________________________________________
  * The TYPO3 project - inspiring people to share!
- * ----------------------------------------------
+ * _________________________________________________
  */
 
 defined('TYPO3') || die('not TYPO3 env');
@@ -132,7 +133,7 @@ $GLOBALS['TCA']['sys_file_collection']['ctrl']['default_sortby'] = 'ORDER BY sor
 // enable main asset preview in list module
 $GLOBALS['TCA']['sys_file_collection']['ctrl']['thumbnail'] = 'main_asset';
 
-\TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule(
+TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule(
     $GLOBALS['TCA']['sys_file_collection']['columns'],
     $additionalColumns
 );

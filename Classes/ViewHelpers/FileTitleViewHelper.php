@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 /*
- * Copyright (C) 2024 Christian Racan
- * ----------------------------------------------
- * new version of sf_media_gallery for TYPO3 v12
+ * (c) 2024 rc design visual concepts (rc-design.at)
+ * _________________________________________________
  * The TYPO3 project - inspiring people to share!
- * ----------------------------------------------
+ * _________________________________________________
  */
 
 namespace MiniFranske\FsMediaGallery\ViewHelpers;
@@ -43,7 +42,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 
 /**
- * File title viewHelper
+ * File title viewHelper.
  */
 class FileTitleViewHelper extends AbstractViewHelper
 {
@@ -52,18 +51,19 @@ class FileTitleViewHelper extends AbstractViewHelper
      *
      * @throws Exception
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('file', FileInterface::class, 'File', true);
     }
 
     /**
-     * Get title of a File
+     * Get title of a File.
      *
-     * @param array $arguments
-     * @param Closure $renderChildrenClosure
+     * @param array                     $arguments
+     * @param Closure                   $renderChildrenClosure
      * @param RenderingContextInterface $renderingContext
+     *
      * @return string
      */
     public static function renderStatic(array $arguments, Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)

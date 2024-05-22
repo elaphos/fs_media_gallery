@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 /*
- * Copyright (C) 2024 Christian Racan
- * ----------------------------------------------
- * new version of sf_media_gallery for TYPO3 v12
+ * (c) 2024 rc design visual concepts (rc-design.at)
+ * _________________________________________________
  * The TYPO3 project - inspiring people to share!
- * ----------------------------------------------
+ * _________________________________________________
  */
 
 namespace MiniFranske\FsMediaGallery\ContextMenu\ItemProviders;
@@ -45,9 +44,9 @@ class FsMediaGalleryProvider extends AbstractProvider
     }
 
     /**
-     * Initialize file object
+     * Initialize file object.
      */
-    protected function initialize()
+    protected function initialize(): void
     {
         parent::initialize();
         $resource = GeneralUtility::makeInstance(ResourceFactory::class)
@@ -64,9 +63,10 @@ class FsMediaGalleryProvider extends AbstractProvider
     }
 
     /**
-     * Adds the media album add/edit menu items
+     * Adds the media album add/edit menu items.
      *
      * @param array $items
+     *
      * @return array
      */
     public function addItems(array $items): array
@@ -142,6 +142,7 @@ class FsMediaGalleryProvider extends AbstractProvider
 
     /**
      * @param string $itemName
+     *
      * @return array
      */
     protected function getAdditionalAttributes(string $itemName): array
@@ -160,7 +161,7 @@ class FsMediaGalleryProvider extends AbstractProvider
     }
 
     /**
-     * Get language string
+     * Get language string.
      *
      * @return string
      */

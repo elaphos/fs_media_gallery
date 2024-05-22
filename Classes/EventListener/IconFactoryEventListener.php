@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 /*
- * Copyright (C) 2024 Christian Racan
- * ----------------------------------------------
- * new version of sf_media_gallery for TYPO3 v12
+ * (c) 2024 rc design visual concepts (rc-design.at)
+ * _________________________________________________
  * The TYPO3 project - inspiring people to share!
- * ----------------------------------------------
+ * _________________________________________________
  */
 
 namespace MiniFranske\FsMediaGallery\EventListener;
@@ -42,13 +41,15 @@ use TYPO3\CMS\Core\Resource\FolderInterface;
 
 /**
  * Changes the folder icon in folder tree to sys_file_collection image, if contained
- * images are defined as media gallery
+ * images are defined as media gallery.
  */
 class IconFactoryEventListener
 {
     private static ?array $mediaFolders = null;
 
-    public function __construct(private readonly Utility $utilityService) {}
+    public function __construct(private readonly Utility $utilityService)
+    {
+    }
 
     public function buildIconForResource(
         ModifyIconForResourcePropertiesEvent $event

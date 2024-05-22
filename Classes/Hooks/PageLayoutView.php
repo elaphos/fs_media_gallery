@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 /*
- * Copyright (C) 2024 Christian Racan
- * ----------------------------------------------
- * new version of sf_media_gallery for TYPO3 v12
+ * (c) 2024 rc design visual concepts (rc-design.at)
+ * _________________________________________________
  * The TYPO3 project - inspiring people to share!
- * ----------------------------------------------
+ * _________________________________________________
  */
 
 namespace MiniFranske\FsMediaGallery\Hooks;
@@ -26,7 +25,7 @@ use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Class PageLayoutView
+ * Class PageLayoutView.
  */
 class PageLayoutView
 {
@@ -93,10 +92,11 @@ class PageLayoutView
 
     /**
      * Get field value from flexform configuration,
-     * including checks if flexform configuration is available
+     * including checks if flexform configuration is available.
      *
-     * @param string $key name of the key
+     * @param string $key   name of the key
      * @param string $sheet name of the sheet
+     *
      * @return string|null if nothing found, value if found
      */
     private function getFieldFromFlexform(string $key, string $sheet = 'general'): ?string
@@ -217,7 +217,7 @@ class PageLayoutView
     }
 
     /**
-     * Render the settings as table for Web>Page module
+     * Render the settings as table for Web>Page module.
      *
      * System settings are displayed in mono font
      */

@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 /*
- * Copyright (C) 2024 Christian Racan
- * ----------------------------------------------
- * new version of sf_media_gallery for TYPO3 v12
+ * (c) 2024 rc design visual concepts (rc-design.at)
+ * _________________________________________________
  * The TYPO3 project - inspiring people to share!
- * ----------------------------------------------
+ * _________________________________________________
  */
 
 namespace MiniFranske\FsMediaGallery\Service;
@@ -20,7 +19,7 @@ use TYPO3\CMS\Core\DataHandling\SlugHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Class SlugService
+ * Class SlugService.
  */
 class SlugService
 {
@@ -106,7 +105,7 @@ class SlugService
     /**
      * Count valid entries from EXT:realurl table tx_realurl_uniqalias which can be migrated
      * Checks also for existance of third party extension table 'tx_realurl_uniqalias'
-     * EXT:realurl requires not to be installed
+     * EXT:realurl requires not to be installed.
      *
      * @return int
      */
@@ -167,7 +166,7 @@ class SlugService
     }
 
     /**
-     * Perform migration of EXT:realurl unique alias into fs_media_gallery slugs
+     * Perform migration of EXT:realurl unique alias into fs_media_gallery slugs.
      *
      * @return array
      */

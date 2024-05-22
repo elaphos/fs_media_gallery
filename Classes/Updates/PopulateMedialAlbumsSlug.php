@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 /*
- * Copyright (C) 2024 Christian Racan
- * ----------------------------------------------
- * new version of sf_media_gallery for TYPO3 v12
+ * (c) 2024 rc design visual concepts (rc-design.at)
+ * _________________________________________________
  * The TYPO3 project - inspiring people to share!
- * ----------------------------------------------
+ * _________________________________________________
  */
 
 namespace MiniFranske\FsMediaGallery\Updates;
@@ -31,7 +30,7 @@ use TYPO3\CMS\Install\Updates\DatabaseUpdatedPrerequisite;
 use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
 /**
- * Migrate EXT:realurl unique alias into album slugs
+ * Migrate EXT:realurl unique alias into album slugs.
  *
  * If a lot of similar titles are used it might be a good an idea
  * to migrate the unique aliases from realurl to be sure that the same alias is used
@@ -42,7 +41,9 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
  */
 class PopulateMedialAlbumsSlug implements UpgradeWizardInterface
 {
-    /** @var SlugService */
+    /**
+     * @var SlugService
+     */
     protected $slugService;
 
     public function __construct()
@@ -51,7 +52,7 @@ class PopulateMedialAlbumsSlug implements UpgradeWizardInterface
     }
 
     /**
-     * Get title
+     * Get title.
      *
      * @return string
      */
@@ -61,7 +62,7 @@ class PopulateMedialAlbumsSlug implements UpgradeWizardInterface
     }
 
     /**
-     * Get description
+     * Get description.
      *
      * @return string Longer description of this updater
      */
@@ -86,7 +87,7 @@ class PopulateMedialAlbumsSlug implements UpgradeWizardInterface
     }
 
     /**
-     * Checks if an update is needed
+     * Checks if an update is needed.
      *
      * @return bool Whether an update is needed (TRUE) or not (FALSE)
      */
@@ -100,7 +101,7 @@ class PopulateMedialAlbumsSlug implements UpgradeWizardInterface
     }
 
     /**
-     * Performs the database update
+     * Performs the database update.
      *
      * @return bool
      */

@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 /*
- * Copyright (C) 2024 Christian Racan
- * ----------------------------------------------
- * new version of sf_media_gallery for TYPO3 v12
+ * (c) 2024 rc design visual concepts (rc-design.at)
+ * _________________________________________________
  * The TYPO3 project - inspiring people to share!
- * ----------------------------------------------
+ * _________________________________________________
  */
 
 namespace MiniFranske\FsMediaGallery\Pagination;
@@ -34,7 +33,7 @@ class ExtendedArrayPaginator extends AbstractPaginator
     }
 
     /**
-     * @return iterable|array
+     * @return array|iterable
      */
     public function getPaginatedItems(): iterable
     {

@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 /*
- * Copyright (C) 2024 Christian Racan
- * ----------------------------------------------
- * new version of sf_media_gallery for TYPO3 v12
+ * (c) 2024 rc design visual concepts (rc-design.at)
+ * _________________________________________________
  * The TYPO3 project - inspiring people to share!
- * ----------------------------------------------
+ * _________________________________________________
  */
 
 namespace MiniFranske\FsMediaGallery\EventListener;
@@ -54,17 +53,19 @@ use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\FolderInterface;
 
 /**
- * EventListener to clear media gallery cache after various file/folder modifications in filelist
+ * EventListener to clear media gallery cache after various file/folder modifications in filelist.
  */
 final class FolderChangedEventListener
 {
     protected $folderMapping = [];
 
-    public function __construct(private readonly Utility $utilityService, private readonly ExtensionConfiguration $extensionConfiguration) {}
+    public function __construct(private readonly Utility $utilityService, private readonly ExtensionConfiguration $extensionConfiguration)
+    {
+    }
 
     /**
      * Get sub folder structure of folder before is gets moved
-     * Is needed to update sys_file_collection records when move was successful
+     * Is needed to update sys_file_collection records when move was successful.
      */
     public function preFolderMove(BeforeFolderMovedEvent $event): void
     {
@@ -72,7 +73,7 @@ final class FolderChangedEventListener
     }
 
     /**
-     * Update sys_file_collection records when folder is moved
+     * Update sys_file_collection records when folder is moved.
      */
     public function postFolderMove(AfterFolderMovedEvent $event): void
     {
@@ -115,7 +116,7 @@ final class FolderChangedEventListener
 
     /**
      * Get sub folder structure of folder before is gets deleted
-     * Is needed to update sys_file_collection records when delete was successful
+     * Is needed to update sys_file_collection records when delete was successful.
      */
     public function preFolderDelete(BeforeFolderDeletedEvent $event): void
     {
@@ -123,7 +124,7 @@ final class FolderChangedEventListener
     }
 
     /**
-     * Update sys_file_collection records when folder is deleted
+     * Update sys_file_collection records when folder is deleted.
      */
     public function postFolderDelete(AfterFolderDeletedEvent $event): void
     {
@@ -138,7 +139,7 @@ final class FolderChangedEventListener
 
     /**
      * Auto creates a file collection to the first parentCollection found of the current folder,
-     * when no collection is found nothing is created
+     * when no collection is found nothing is created.
      */
     public function postFolderAdd(AfterFolderAddedEvent $event): void
     {
@@ -186,7 +187,7 @@ final class FolderChangedEventListener
         $this->clearMediaGalleryPageCache($event->getFolder());
     }
 
-    public function postFileMove(AfterFileMovedEvent $event)
+    public function postFileMove(AfterFileMovedEvent $event): void
     {
         $this->clearMediaGalleryPageCache($event->getOriginalFolder());
         $this->clearMediaGalleryPageCache($event->getFolder());

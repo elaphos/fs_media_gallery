@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 /*
- * Copyright (C) 2024 Christian Racan
- * ----------------------------------------------
- * new version of sf_media_gallery for TYPO3 v12
+ * (c) 2024 rc design visual concepts (rc-design.at)
+ * _________________________________________________
  * The TYPO3 project - inspiring people to share!
- * ----------------------------------------------
+ * _________________________________________________
  */
 
 namespace MiniFranske\FsMediaGallery\Service;
@@ -39,6 +38,7 @@ use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\Folder;
@@ -53,7 +53,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 abstract class AbstractBeAlbumButtons
 {
     /**
-     * Generate album add/edit buttons for click menu or toolbar
+     * Generate album add/edit buttons for click menu or toolbar.
      */
     protected function generateButtons(string $combinedIdentifier): array
     {
@@ -61,7 +61,7 @@ abstract class AbstractBeAlbumButtons
 
         // In some folder copy/move actions in file list an invalid id is passed
         try {
-            /** @var $file Folder */
+            /** @var Folder $file */
             $folder = GeneralUtility::makeInstance(ResourceFactory::class)
                 ->retrieveFileOrFolderObject($combinedIdentifier);
         } catch (ResourceDoesNotExistException) {
@@ -155,7 +155,7 @@ abstract class AbstractBeAlbumButtons
     }
 
     /**
-     * Build Add new media album url
+     * Build Add new media album url.
      */
     protected function buildAddUrl(int $pid, int $parentAlbumUid, Folder $folder): Uri
     {
@@ -182,7 +182,7 @@ abstract class AbstractBeAlbumButtons
     protected function getIcon(string $name): Icon
     {
         $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-        return $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
+        return $iconFactory->getIcon('action-' . $name, IconSize::SMALL);
     }
 
     protected function getLangService(): LanguageService
@@ -191,7 +191,7 @@ abstract class AbstractBeAlbumButtons
     }
 
     /**
-     * Get language string
+     * Get language string.
      */
     protected function sL(string $key, string $languageFile = 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf'): string
     {
