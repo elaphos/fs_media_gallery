@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
 namespace MiniFranske\FsMediaGallery\Service;
 
 /***************************************************************
@@ -27,15 +35,15 @@ namespace MiniFranske\FsMediaGallery\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Core\Http\Uri;
-use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Resource\FolderInterface;
-use TYPO3\CMS\Core\Resource\ResourceFactory;
-use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\FolderInterface;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -56,11 +64,12 @@ abstract class AbstractBeAlbumButtons
             /** @var $file Folder */
             $folder = GeneralUtility::makeInstance(ResourceFactory::class)
                 ->retrieveFileOrFolderObject($combinedIdentifier);
-        } catch (ResourceDoesNotExistException $exception) {
+        } catch (ResourceDoesNotExistException) {
             $folder = null;
         }
 
-        if ($folder instanceof Folder &&
+        if (
+            $folder instanceof Folder &&
             in_array(
                 $folder->getRole(),
                 [FolderInterface::ROLE_DEFAULT, FolderInterface::ROLE_USERUPLOAD]
@@ -69,6 +78,8 @@ abstract class AbstractBeAlbumButtons
             /** @var Utility $utility */
             $utility = GeneralUtility::makeInstance(Utility::class);
             $mediaFolders = $utility->getStorageFolders();
+
+            // \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($collections, 'Collections');
 
             if (count($mediaFolders)) {
                 $collections = $utility->findFileCollectionRecordsForFolder(
@@ -82,14 +93,16 @@ abstract class AbstractBeAlbumButtons
                         sprintf($this->sL('module.buttons.editAlbum'), $collection['title']),
                         sprintf(
                             $this->sL('module.buttons.editAlbum'),
-                            mb_strimwidth($collection['title'], 0,12, '...')
+                            mb_strimwidth((string)$collection['title'], 0, 12, '...')
                         ),
                         $this->getIcon('edit-album'),
                         (string)$this->buildEditUrl($collection['uid'])
                     );
                 }
 
-                if (!count($collections)) {
+                // \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($mediaFolders, 'Media Folders');
+
+                if (!count((array)$collections)) {
                     foreach ($mediaFolders as $uid => $title) {
                         // find parent album for auto setting parent album
                         $parentUid = 0;
@@ -99,14 +112,14 @@ abstract class AbstractBeAlbumButtons
                             [$uid]
                         );
                         // if parent(s) found we take the first one
-                        if (count($parents)) {
+                        if (count((array)$parents)) {
                             $parentUid = $parents[0]['uid'];
                         }
                         $buttons[] = $this->createLink(
                             sprintf($this->sL('module.buttons.createAlbumIn'), $title),
                             sprintf(
                                 $this->sL('module.buttons.createAlbumIn'),
-                                mb_strimwidth($title, 0, 12, '...')
+                                mb_strimwidth((string)$title, 0, 12, '...')
                             ),
                             $this->getIcon('add-album'),
                             (string)$this->buildAddUrl($uid, $parentUid, $folder)
@@ -134,10 +147,10 @@ abstract class AbstractBeAlbumButtons
         return GeneralUtility::makeInstance(UriBuilder::class)->buildUriFromRoute('record_edit', [
             'edit' => [
                 'sys_file_collection' => [
-                    $mediaAlbumUid => 'edit'
-                ]
+                    $mediaAlbumUid => 'edit',
+                ],
             ],
-            'returnUrl' => GeneralUtility::getIndpEnv('REQUEST_URI')
+            'returnUrl' => GeneralUtility::getIndpEnv('REQUEST_URI'),
         ]);
     }
 
@@ -149,19 +162,18 @@ abstract class AbstractBeAlbumButtons
         return GeneralUtility::makeInstance(UriBuilder::class)->buildUriFromRoute('record_edit', [
             'edit' => [
                 'sys_file_collection' => [
-                    $pid => 'new'
-                ]
+                    $pid => 'new',
+                ],
             ],
             'defVals' => [
                 'sys_file_collection' => [
                     'parentalbum' => $parentAlbumUid,
-                    'title' => ucfirst(trim(str_replace('_', ' ', $folder->getName()))),
-                    'storage' => $folder->getStorage()->getUid(),
-                    'folder' => $folder->getIdentifier(),
+                    'title' => ucfirst(trim(str_replace('_', ' ', (string)$folder->getName()))),
+                    'folder_identifier' => $folder->getStorage()->getUid() . ':' . $folder->getIdentifier(),
                     'type' => 'folder',
-                ]
+                ],
             ],
-            'returnUrl' => GeneralUtility::getIndpEnv('REQUEST_URI')
+            'returnUrl' => GeneralUtility::getIndpEnv('REQUEST_URI'),
         ]);
     }
 

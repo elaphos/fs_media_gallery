@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
 namespace MiniFranske\FsMediaGallery\Domain\Model;
 
 /***************************************************************
@@ -27,15 +35,16 @@ namespace MiniFranske\FsMediaGallery\Domain\Model;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 use DateTime;
-use TYPO3\CMS\Core\Resource\Collection\AbstractFileCollection;
-use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
-use TYPO3\CMS\Core\Resource\FileCollectionRepository;
 use MiniFranske\FsMediaGallery\Domain\Repository\MediaAlbumRepository;
+use TYPO3\CMS\Core\Resource\Collection\AbstractFileCollection;
 use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\FileCollectionRepository;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Annotation\ORM\Lazy;
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
@@ -43,7 +52,6 @@ use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
  */
 class MediaAlbum extends AbstractEntity
 {
-
     /**
      * fileCollectionRepository
      *
@@ -92,7 +100,7 @@ class MediaAlbum extends AbstractEntity
     protected $assets;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $assetsCount;
 
@@ -117,8 +125,8 @@ class MediaAlbum extends AbstractEntity
 
     /**
      * @var MediaAlbum|null
-     * @TYPO3\CMS\Extbase\Annotation\ORM\Lazy
      */
+    #[Lazy]
     protected $parentalbum;
 
     /**
@@ -132,8 +140,8 @@ class MediaAlbum extends AbstractEntity
      * Child albums
      *
      * @var ObjectStorage<MediaAlbum>
-     * @TYPO3\CMS\Extbase\Annotation\ORM\Lazy
      */
+    #[Lazy]
     public $albumCache;
 
     /**
@@ -141,14 +149,16 @@ class MediaAlbum extends AbstractEntity
      */
     protected $datetime;
 
-    public function injectFileCollectionRepository(FileCollectionRepository $fileCollectionRepository): void
+    public function __construct()
     {
-        $this->fileCollectionRepository = $fileCollectionRepository;
+        $this->fileCollectionRepository = GeneralUtility::makeInstance(FileCollectionRepository::class);
+        $this->mediaAlbumRepository = GeneralUtility::makeInstance(MediaAlbumRepository::class);
     }
 
-    public function injectMediaAlbumRepository(MediaAlbumRepository $mediaAlbumRepository): void
+    public function initializeObject(): void
     {
-        $this->mediaAlbumRepository = $mediaAlbumRepository;
+        $this->fileCollectionRepository = $this->fileCollectionRepository ?? GeneralUtility::makeInstance(FileCollectionRepository::class);
+        $this->mediaAlbumRepository = $this->mediaAlbumRepository ?? GeneralUtility::makeInstance(MediaAlbumRepository::class);
     }
 
     /**
@@ -234,7 +244,7 @@ class MediaAlbum extends AbstractEntity
     /**
      * Set hidden
      *
-     * @param boolean $hidden
+     * @param bool $hidden
      */
     public function setHidden($hidden)
     {
@@ -244,7 +254,7 @@ class MediaAlbum extends AbstractEntity
     /**
      * Get hidden
      *
-     * @return boolean
+     * @return bool
      */
     public function getHidden()
     {
@@ -265,7 +275,6 @@ class MediaAlbum extends AbstractEntity
      * Sets the title
      *
      * @param \string $title
-     * @return void
      */
     public function setTitle($title)
     {
@@ -286,7 +295,6 @@ class MediaAlbum extends AbstractEntity
      * Sets the webdescription
      *
      * @param \string $webdescription
-     * @return void
      */
     public function setWebdescription($webdescription)
     {
@@ -295,8 +303,6 @@ class MediaAlbum extends AbstractEntity
 
     /**
      * Set parentalbum
-     *
-     * @param MediaAlbum $parentalbum
      */
     public function setParentalbum(MediaAlbum $parentalbum)
     {
@@ -339,7 +345,7 @@ class MediaAlbum extends AbstractEntity
                     $files = $this->orderAssets($files, $this->assetsOrderBy, $this->assetsOrderDirection);
                 }
                 $this->assetCache = $files;
-            } catch (\Exception $exception) {
+            } catch (\Exception) {
                 // failing albums get disabled
                 $this->setHidden(true);
                 $this->mediaAlbumRepository->update($this);
@@ -353,7 +359,7 @@ class MediaAlbum extends AbstractEntity
      * Get asset by uid
      *
      * @param int $assetUid
-     * @return File|FileReference|NULL
+     * @return File|FileReference|null
      */
     public function getAssetByUid($assetUid)
     {
@@ -410,14 +416,14 @@ class MediaAlbum extends AbstractEntity
     /**
      * Get assetsCount
      *
-     * @return integer
+     * @return int
      */
     public function getAssetsCount()
     {
         if ($this->assetCache === null) {
             return count($this->getAssets());
         }
-        return count($this->assetCache);
+        return count((array)$this->assetCache);
     }
 
     /**
@@ -441,7 +447,7 @@ class MediaAlbum extends AbstractEntity
     public function getRandomAlbum()
     {
         $albums = $this->getAlbums();
-        return $albums[rand(0, count($albums) - 1)];
+        return $albums[random_int(0, count($albums) - 1)];
     }
 
     /**
@@ -466,16 +472,15 @@ class MediaAlbum extends AbstractEntity
 
         // if there is an asset, return it
         if (count($assets)) {
-            return $assets[rand(1, count($assets)) - 1];
-        } else {
-            // try to fetch it from child album
-            $randomAlbum = $this->getRandomAlbum();
-            if ($randomAlbum) {
-                return $randomAlbum->getRandomAsset();
-            }
-            // album and child album are empty
-            return null;
+            return $assets[random_int(1, count($assets)) - 1];
         }
+        // try to fetch it from child album
+        $randomAlbum = $this->getRandomAlbum();
+        if ($randomAlbum) {
+            return $randomAlbum->getRandomAsset();
+        }
+        // album and child album are empty
+        return null;
     }
 
     /**
@@ -492,7 +497,6 @@ class MediaAlbum extends AbstractEntity
      * Set date time
      *
      * @param DateTime $datetime datetime
-     * @return void
      */
     public function setDatetime($datetime)
     {

@@ -1,4 +1,13 @@
 <?php
+
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
 defined('TYPO3') || die('not TYPO3 env');
 
 $additionalColumns = [
@@ -6,18 +15,17 @@ $additionalColumns = [
         'exclude' => 1,
         'label' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:date_formlabel',
         'config' => [
-            'type' => 'input',
-            'size' => 12,
-            'max' => 20,
-            'eval' => 'datetime',
+            'type' => 'datetime',
+            'format' => 'datetime',
+            'size' => 20,
             'default' => 0,
-        ]
+        ],
     ],
     'sorting' => [
         'label' => 'sorting',
         'config' => [
-            'type' => 'passthrough'
-        ]
+            'type' => 'passthrough',
+        ],
     ],
     'webdescription' => [
         'exclude' => 1,
@@ -58,22 +66,34 @@ $additionalColumns = [
             'minitems' => 0,
             'maxitems' => 1,
             'default' => 0,
-        ]
+        ],
     ],
     'main_asset' => [
         'exclude' => 1,
         'label' => 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_db.xlf:tx_fsmediagallery_domain_model_mediaalbum.main_asset',
-        'config' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getFileFieldTCAConfig(
-            'images',
-            [
+        // 'config' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getFileFieldTCAConfig(
+        //     'images',
+        //     [
+        //         'appearance' => [
+        //             'createNewRelationLinkTitle' => 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_db.xlf:tx_fsmediagallery_domain_model_mediaalbum.main_asset.add'
+        //         ],
+        //         'maxitems' => 1,
+        //     ],
+        //     $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']
+
+        'images' => [
+            'config' => [
                 'appearance' => [
-                    'createNewRelationLinkTitle' => 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_db.xlf:tx_fsmediagallery_domain_model_mediaalbum.main_asset.add'
+                    'createNewRelationLinkTitle' => 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_db.xlf:tx_fsmediagallery_domain_model_mediaalbum.main_asset.add',
                 ],
+                'type' => 'file',
                 'maxitems' => 1,
+                'allowed' => 'common-image-types',
             ],
-            $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']
-        )
+        ],
     ],
+    // )
+    // ],
     'slug' => [
         'exclude' => true,
         'label' => 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_db.xlf:tx_fsmediagallery_domain_model_mediaalbum.slug',
@@ -93,9 +113,11 @@ $additionalColumns = [
 foreach ($GLOBALS['TCA']['sys_file_collection']['types'] as $type => $tmp) {
     $GLOBALS['TCA']['sys_file_collection']['types'][$type]['showitem'] .= ',--div--;LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_db.xlf:tx_fsmediagallery_domain_model_mediaalbum';
     // try to add field datetime before type (after title)
-    if ($replacedTca = preg_replace('/(\s*)type(\s*)([;,])/', 'datetime,type$3',
-        $GLOBALS['TCA']['sys_file_collection']['types'][$type]['showitem'])
-    ) {
+    if ($replacedTca = preg_replace(
+        '/(\s*)type(\s*)([;,])/',
+        'datetime,type$3',
+        $GLOBALS['TCA']['sys_file_collection']['types'][$type]['showitem']
+    )) {
         $GLOBALS['TCA']['sys_file_collection']['types'][$type]['showitem'] = $replacedTca;
     } else {
         $GLOBALS['TCA']['sys_file_collection']['types'][$type]['showitem'] .= ',datetime';
@@ -109,7 +131,6 @@ $GLOBALS['TCA']['sys_file_collection']['ctrl']['default_sortby'] = 'ORDER BY sor
 
 // enable main asset preview in list module
 $GLOBALS['TCA']['sys_file_collection']['ctrl']['thumbnail'] = 'main_asset';
-
 
 \TYPO3\CMS\Core\Utility\ArrayUtility::mergeRecursiveWithOverrule(
     $GLOBALS['TCA']['sys_file_collection']['columns'],

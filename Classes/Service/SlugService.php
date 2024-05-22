@@ -1,16 +1,18 @@
 <?php
 
 declare(strict_types=1);
+
 /*
- * This source file is proprietary of Beech Applications bv.
- * Created by: Ruud Silvrants
- * Date: 30/04/2019
- * All code (c) Beech Applications bv. all rights reserverd
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
  */
 
 namespace MiniFranske\FsMediaGallery\Service;
 
-
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
@@ -19,7 +21,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class SlugService
- * @package MiniFranske\FsMediaGallery\Service
  */
 class SlugService
 {
@@ -42,7 +43,7 @@ class SlugService
         return $queryBuilder->count('uid')
             ->from($this->tableName)
             ->where(
-                $queryBuilder->expr()->orX(
+                $queryBuilder->expr()->or(
                     $queryBuilder->expr()->eq(
                         $this->slugFieldName,
                         $queryBuilder->createNamedParameter('')
@@ -50,7 +51,7 @@ class SlugService
                     $queryBuilder->expr()->isNull($this->slugFieldName)
                 )
             )
-            ->execute()->fetchOne();
+            ->executeQuery()->fetchOne();
     }
 
     public function performUpdateSlugs(): array
@@ -63,13 +64,17 @@ class SlugService
         $queryBuilder->getRestrictions()->removeAll();
         $fieldConfig = $GLOBALS['TCA'][$this->tableName]['columns'][$this->slugFieldName]['config'];
         /** @var SlugHelper $slugHelper */
-        $slugHelper = GeneralUtility::makeInstance(SlugHelper::class, $this->tableName, $this->slugFieldName,
-            $fieldConfig);
+        $slugHelper = GeneralUtility::makeInstance(
+            SlugHelper::class,
+            $this->tableName,
+            $this->slugFieldName,
+            $fieldConfig
+        );
 
         $statement = $queryBuilder->select('*')
             ->from($this->tableName)
             ->where(
-                $queryBuilder->expr()->orX(
+                $queryBuilder->expr()->or(
                     $queryBuilder->expr()->eq(
                         $this->slugFieldName,
                         $queryBuilder->createNamedParameter('')
@@ -77,7 +82,7 @@ class SlugService
                     $queryBuilder->expr()->isNull($this->slugFieldName)
                 )
             )
-            ->execute();
+            ->executeQuery();
 
         while ($record = $statement->fetchAssociative()) {
             //Use the core slughelper which is also used in the BE form
@@ -92,7 +97,7 @@ class SlugService
                 )
                 ->set($this->slugFieldName, $slug);
             $databaseQueries[] = $queryBuilder->getSQL();
-            $queryBuilder->execute();
+            $queryBuilder->executeQuery();
         }
 
         return $databaseQueries;
@@ -128,8 +133,8 @@ class SlugService
                     )
                 )
                 ->where(
-                    $queryBuilder->expr()->andX(
-                        $queryBuilder->expr()->orX(
+                    $queryBuilder->expr()->and(
+                        $queryBuilder->expr()->or(
                             $queryBuilder->expr()->eq(
                                 $this->tableName . '.' . $this->slugFieldName,
                                 $queryBuilder->createNamedParameter('')
@@ -144,19 +149,19 @@ class SlugService
                             'tx_realurl_uniqalias.tablename',
                             $queryBuilder->createNamedParameter($this->tableName)
                         ),
-                        $queryBuilder->expr()->orX(
+                        $queryBuilder->expr()->or(
                             $queryBuilder->expr()->eq(
                                 'tx_realurl_uniqalias.expire',
                                 $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)
                             ),
                             $queryBuilder->expr()->gte(
                                 'tx_realurl_uniqalias.expire',
-                                $queryBuilder->createNamedParameter($GLOBALS['ACCESS_TIME'], Connection::PARAM_INT)
+                                $queryBuilder->createNamedParameter(GeneralUtility::makeInstance(Context::class)->getPropertyFromAspect('date', 'timestamp'), Connection::PARAM_INT)
                             )
                         )
                     )
                 )
-                ->execute()->fetchOne(0);
+                ->executeQuery()->fetchOne();
         }
         return $elementCount;
     }
@@ -197,8 +202,8 @@ class SlugService
                     )
                 )
                 ->where(
-                    $queryBuilder->expr()->andX(
-                        $queryBuilder->expr()->orX(
+                    $queryBuilder->expr()->and(
+                        $queryBuilder->expr()->or(
                             $queryBuilder->expr()->eq(
                                 $this->tableName . '.' . $this->slugFieldName,
                                 $queryBuilder->createNamedParameter('')
@@ -213,19 +218,19 @@ class SlugService
                             'tx_realurl_uniqalias.tablename',
                             $queryBuilder->createNamedParameter($this->tableName)
                         ),
-                        $queryBuilder->expr()->orX(
+                        $queryBuilder->expr()->or(
                             $queryBuilder->expr()->eq(
                                 'tx_realurl_uniqalias.expire',
                                 $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)
                             ),
                             $queryBuilder->expr()->gte(
                                 'tx_realurl_uniqalias.expire',
-                                $queryBuilder->createNamedParameter($GLOBALS['ACCESS_TIME'], Connection::PARAM_INT)
+                                $queryBuilder->createNamedParameter(GeneralUtility::makeInstance(Context::class)->getPropertyFromAspect('date', 'timestamp'), Connection::PARAM_INT)
                             )
                         )
                     )
                 )
-                ->execute();
+                ->executeQuery();
 
             // Update entries
             while ($record = $statement->fetchAssociative()) {
@@ -240,11 +245,10 @@ class SlugService
                     )
                     ->set($this->slugFieldName, $slug);
                 $databaseQueries[] = $queryBuilder->getSQL();
-                $queryBuilder->execute();
+                $queryBuilder->executeQuery();
             }
         }
 
         return $databaseQueries;
     }
-
 }

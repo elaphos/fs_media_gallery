@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
 namespace MiniFranske\FsMediaGallery\ViewHelpers;
 
 /***************************************************************
@@ -30,8 +38,8 @@ namespace MiniFranske\FsMediaGallery\ViewHelpers;
 
 use Closure;
 use TYPO3\CMS\Core\Resource\FileInterface;
-use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 
 /**
@@ -39,7 +47,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
  */
 class FileTitleViewHelper extends AbstractViewHelper
 {
-
     /**
      * Initialize arguments.
      *
@@ -74,8 +81,7 @@ class FileTitleViewHelper extends AbstractViewHelper
 
         if ($file->getProperty('title')) {
             return $file->getProperty('title');
-        } else {
-            return str_ireplace('_', ' ', $file->getNameWithoutExtension());
         }
+        return str_ireplace('_', ' ', $file->getNameWithoutExtension());
     }
 }

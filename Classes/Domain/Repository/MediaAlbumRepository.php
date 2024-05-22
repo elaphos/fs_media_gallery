@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
 namespace MiniFranske\FsMediaGallery\Domain\Repository;
 
 /***************************************************************
@@ -28,18 +36,17 @@ namespace MiniFranske\FsMediaGallery\Domain\Repository;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum;
 use TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException;
 use TYPO3\CMS\Extbase\Persistence\Generic\Query;
-use TYPO3\CMS\Extbase\Persistence\Repository;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
-use MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum;
+use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
  * MediaAlbumRepository
  */
 class MediaAlbumRepository extends Repository
 {
-
     /**
      * @var array default ordering
      */
@@ -116,7 +123,7 @@ class MediaAlbumRepository extends Repository
     /**
      * Get useAlbumUidsAsExclude
      *
-     * @return boolean
+     * @return bool
      */
     public function getUseAlbumUidsAsExclude()
     {
@@ -126,7 +133,7 @@ class MediaAlbumRepository extends Repository
     /**
      * Set useAlbumUidsAsExclude
      *
-     * @param boolean $useAlbumUidsAsExclude
+     * @param bool $useAlbumUidsAsExclude
      */
     public function setUseAlbumUidsAsExclude($useAlbumUidsAsExclude)
     {
@@ -181,7 +188,6 @@ class MediaAlbumRepository extends Repository
      */
     public function findRandom($parent = null)
     {
-
         /** @var Query $query */
         $query = $this->createQuery();
         $constraints = [];
@@ -198,6 +204,11 @@ class MediaAlbumRepository extends Repository
             } else {
                 $constraints[] = $query->in('uid', $this->albumUids);
             }
+        }
+        if (count($constraints) === 1) {
+            $query->matching(reset($constraints));
+        } elseif (count($constraints) >= 2) {
+            $query->matching($query->logicalAnd(...$constraints));
         }
         $query->matching($query->logicalAnd(...$constraints));
         $mediaAlbums = $query->execute()->toArray();
@@ -222,7 +233,7 @@ class MediaAlbumRepository extends Repository
      * Find albums by parent album
      *
      * @param MediaAlbum|null $parentAlbum
-     * @param boolean $excludeEmptyAlbums
+     * @param bool $excludeEmptyAlbums
      * @param string $orderBy Sort albums by: datetime|crdate|sorting
      * @param string $orderDirection Sort order: asc|desc
      * @return MediaAlbum[]
@@ -247,7 +258,7 @@ class MediaAlbumRepository extends Repository
             }
         }
 
-        $query->matching($query->logicalAnd($constraints));
+        $query->matching($query->logicalAnd(...$constraints));
         $query->setOrderings($this->getOrderingsSettings($orderBy, $orderDirection));
         $mediaAlbums = $query->execute()->toArray();
 
@@ -266,7 +277,7 @@ class MediaAlbumRepository extends Repository
                 &&
                 $mediaAlbum->getAssetsCount() === 0
                 &&
-                count($mediaAlbum->getAlbums()) === 0
+                (is_countable($mediaAlbum->getAlbums()) ? count($mediaAlbum->getAlbums()) : 0) === 0
             ) {
                 unset($mediaAlbums[$key]);
             }
@@ -279,13 +290,12 @@ class MediaAlbumRepository extends Repository
     /**
      * Find album by Uid
      *
-     * @param integer $uid The identifier of the MediaAlbum to find
+     * @param int $uid The identifier of the MediaAlbum to find
      * @param bool $respectStorage possibility to disable storage restriction
-     * @return MediaAlbum|NULL The matching media album if found, otherwise NULL
+     * @return MediaAlbum|null The matching media album if found, otherwise NULL
      */
     public function findByUid($uid, $respectStorage = true)
     {
-
         $query = $this->createQuery();
         $query->getQuerySettings()->setRespectSysLanguage(false);
 
@@ -304,7 +314,7 @@ class MediaAlbumRepository extends Repository
         }
 
         /** @var $mediaAlbum MediaAlbum */
-        $mediaAlbum = $query->matching($query->logicalAnd($constraints))->execute()->getFirst();
+        $mediaAlbum = $query->matching($query->logicalAnd(...$constraints))->execute()->getFirst();
 
         if ($mediaAlbum) {
             // set allowed asset mime types
@@ -320,7 +330,7 @@ class MediaAlbumRepository extends Repository
     /**
      * Find all albums
      *
-     * @param boolean $excludeEmptyAlbums
+     * @param bool $excludeEmptyAlbums
      * @param string $orderBy Sort albums by: datetime|crdate|sorting
      * @param string $orderDirection Sort order: asc|desc
      * @return MediaAlbum[]
@@ -357,7 +367,7 @@ class MediaAlbumRepository extends Repository
                 &&
                 $mediaAlbum->getAssetsCount() === 0
                 &&
-                count($mediaAlbum->getAlbums()) === 0
+                (is_countable($mediaAlbum->getAlbums()) ? count($mediaAlbum->getAlbums()) : 0) === 0
             ) {
                 unset($mediaAlbums[$key]);
             }
@@ -380,7 +390,6 @@ class MediaAlbumRepository extends Repository
      */
     protected function getOrderingsSettings($orderBy = 'sorting', $orderDirection = 'asc')
     {
-
         // check orderDirection
         if ($orderDirection === 'asc') {
             $orderDirection = QueryInterface::ORDER_ASCENDING;
@@ -388,26 +397,18 @@ class MediaAlbumRepository extends Repository
             $orderDirection = QueryInterface::ORDER_DESCENDING;
         }
 
-        // set $orderingsSettings by orderBy and orderDirection
-        switch ($orderBy) {
-            case 'datetime':
-                $orderingsSettings = [
-                    'datetime' => $orderDirection,
-                    'crdate' => $orderDirection
-                ];
-                break;
-            case 'crdate':
-                $orderingsSettings = ['crdate' => $orderDirection];
-                break;
-            default:
-                // sorting
-                $orderingsSettings = [
-                    'sorting' => $orderDirection,
-                    'crdate' => $orderDirection
-                ];
-        }
+        $orderingsSettings = match ($orderBy) {
+            'datetime' => [
+                'datetime' => $orderDirection,
+                'crdate' => $orderDirection,
+            ],
+            'crdate' => ['crdate' => $orderDirection],
+            default => [
+                'sorting' => $orderDirection,
+                'crdate' => $orderDirection,
+            ],
+        };
 
         return $orderingsSettings;
     }
-
 }

@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
 namespace MiniFranske\FsMediaGallery\ViewHelpers\Embed;
 
 /*                                                                        *
@@ -18,36 +26,30 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Embed JavaScript view helper.
  */
 class JavaScriptViewHelper extends AbstractViewHelper
 {
-
-    /**
-     * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
-     */
-    protected $configurationManager;
-
-    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager): void
-    {
-        $this->configurationManager = $configurationManager;
-    }
-
     /**
      * Initialize arguments
-     *
-     * @return void
      */
     public function initializeArguments()
     {
-        $this->registerArgument('name', 'string',
-            'If empty, a combination of plugin name and the uid of the cObj is used.');
-        $this->registerArgument('moveToFooter', 'boolean',
-            'If TRUE, adds the script to the document footer by PageRenderer->addJsFooterInlineCode().');
+        $this->registerArgument(
+            'name',
+            'string',
+            'If empty, a combination of plugin name and the uid of the cObj is used.'
+        );
+        $this->registerArgument(
+            'moveToFooter',
+            'boolean',
+            'If TRUE, adds the script to the document footer by PageRenderer->addJsFooterInlineCode().'
+        );
     }
 
     /**
@@ -65,7 +67,7 @@ class JavaScriptViewHelper extends AbstractViewHelper
 
         if (empty($this->arguments['name'])) {
             $blockName = 'tx_fsmediagallery';
-            if ($cObj = $this->configurationManager->getContentObject()) {
+            if ($cObj = $this->getContentObjectRenderer()) {
                 $blockName .= '.' . $cObj->data['uid'];
             }
         } else {
@@ -80,11 +82,10 @@ class JavaScriptViewHelper extends AbstractViewHelper
                 $GLOBALS['TSFE']->config['config']['compressJs']
             );
             return '';
-        } else {
-            $lb = "\n";
-            return '<script type="text/javascript">' . $lb . '/*<![CDATA[*/' . $lb .
-            '/*' . $blockName . '*/' . $lb . $content . $lb . '/*]]>*/' . $lb . '</script>';
         }
+        $lb = "\n";
+        return '<script type="text/javascript">' . $lb . '/*<![CDATA[*/' . $lb .
+            '/*' . $blockName . '*/' . $lb . $content . $lb . '/*]]>*/' . $lb . '</script>';
     }
 
     /**
@@ -102,5 +103,23 @@ class JavaScriptViewHelper extends AbstractViewHelper
         }
 
         return 'BE';
+    }
+
+    private function getContentObjectRenderer(): ?ContentObjectRenderer
+    {
+        if ($this->getExtbaseRequest() instanceof ServerRequestInterface) {
+            $this->getExtbaseRequest()->getAttribute('currentContentObject');
+        }
+
+        return null;
+    }
+
+    private function getExtbaseRequest(): ?ServerRequestInterface
+    {
+        if ($this->renderingContext instanceof RenderingContext) {
+            return $this->renderingContext->getRequest();
+        }
+
+        return null;
     }
 }

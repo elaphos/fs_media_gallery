@@ -2,7 +2,15 @@
 
 declare(strict_types=1);
 
-namespace MiniFranske\FsMediaGallery\Listeners;
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
+namespace MiniFranske\FsMediaGallery\EventListener;
 
 /***************************************************************
  *  Copyright notice
@@ -29,33 +37,22 @@ namespace MiniFranske\FsMediaGallery\Listeners;
 
 use MiniFranske\FsMediaGallery\Service\Utility;
 use TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent;
-use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\FolderInterface;
 
 /**
- * Class IconFactory
+ * Changes the folder icon in folder tree to sys_file_collection image, if contained
+ * images are defined as media gallery
  */
-class IconFactoryListener
+class IconFactoryEventListener
 {
-    /**
-     * @var array
-     */
-    static private $mediaFolders;
+    private static ?array $mediaFolders = null;
 
-    /**
-     * @var Utility
-     */
-    private $utilityService;
-
-    public function __construct(Utility $utilityService)
-    {
-        $this->utilityService = $utilityService;
-    }
+    public function __construct(private readonly Utility $utilityService) {}
 
     public function buildIconForResource(
         ModifyIconForResourcePropertiesEvent $event
-    ): void
-    {
+    ): void {
         $folderObject = $event->getResource();
 
         if (!($folderObject instanceof Folder)

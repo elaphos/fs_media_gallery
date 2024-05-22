@@ -2,7 +2,15 @@
 
 declare(strict_types=1);
 
-namespace MiniFranske\FsMediaGallery\Listeners;
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
+namespace MiniFranske\FsMediaGallery\EventListener;
 
 /***************************************************************
  *  Copyright notice
@@ -27,6 +35,7 @@ namespace MiniFranske\FsMediaGallery\Listeners;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use MiniFranske\FsMediaGallery\Service\Utility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Resource\Event\AfterFileAddedEvent;
@@ -41,32 +50,17 @@ use TYPO3\CMS\Core\Resource\Event\AfterFolderDeletedEvent;
 use TYPO3\CMS\Core\Resource\Event\AfterFolderMovedEvent;
 use TYPO3\CMS\Core\Resource\Event\BeforeFolderDeletedEvent;
 use TYPO3\CMS\Core\Resource\Event\BeforeFolderMovedEvent;
-use MiniFranske\FsMediaGallery\Service\Utility;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\FolderInterface;
 
 /**
- * Slots that pick up signals after (re)moving folders to update mediagallery record (sys_file_collection)
+ * EventListener to clear media gallery cache after various file/folder modifications in filelist
  */
-final class FolderChangedListener
+final class FolderChangedEventListener
 {
     protected $folderMapping = [];
 
-    /**
-     * @var Utility
-     */
-    private $utilityService;
-
-    /**
-     * @var ExtensionConfiguration
-     */
-    private $extensionConfiguration;
-
-    public function __construct(Utility $utilityService, ExtensionConfiguration $extensionConfiguration)
-    {
-        $this->utilityService = $utilityService;
-        $this->extensionConfiguration = $extensionConfiguration;
-    }
+    public function __construct(private readonly Utility $utilityService, private readonly ExtensionConfiguration $extensionConfiguration) {}
 
     /**
      * Get sub folder structure of folder before is gets moved
@@ -93,9 +87,9 @@ final class FolderChangedListener
         // If this is a subFolder find new parent album
         if ($newFolder->getParentFolder() !== $newFolder) {
             $newParentId = $this->utilityService->findFileCollectionRecordsForFolder(
-                    $newStorageUid,
-                    $event->getFolder()->getParentFolder()->getIdentifier()
-                )[0]['parentalbum'] ?? null;
+                $newStorageUid,
+                $event->getFolder()->getParentFolder()->getIdentifier()
+            )[0]['parentalbum'] ?? null;
         }
 
         $this->utilityService->updateFolderRecord(
@@ -167,7 +161,7 @@ final class FolderChangedListener
             // Take the first parent found
             $parentUid = $parents[0]['uid'];
             $this->utilityService->createFolderRecord(
-                ucfirst(trim(str_replace('_', ' ', $folder->getName()))),
+                ucfirst(trim(str_replace('_', ' ', (string)$folder->getName()))),
                 $uid,
                 $folder->getStorage()->getUid(),
                 $folder->getIdentifier(),

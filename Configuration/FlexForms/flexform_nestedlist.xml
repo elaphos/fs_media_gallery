@@ -7,66 +7,10 @@
                 </sheetTitle>
                 <type>array</type>
                 <el>
-                    <switchableControllerActions>
-                        <label>
-                            LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.switchableControllerActions
-                        </label>
-                        <onChange>reload</onChange>
-                        <config>
-                            <type>select</type>
-                            <renderType>selectSingle</renderType>
-                            <itemsProcFunc>
-                                MiniFranske\FsMediaGallery\Hooks\ItemsProcFuncHook->getItemsForSwitchableControllerActions
-                            </itemsProcFunc>
-                            <items type="array">
-                                <numIndex index="0">
-                                    <label>
-                                        LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.switchableControllerActions.I.empty
-                                    </label>
-                                    <value>MediaAlbum->index</value>
-                                </numIndex>
-                                <numIndex index="1">
-                                    <label>
-                                        LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.switchableControllerActions.I.nestedList
-                                    </label>
-                                    <value>MediaAlbum->nestedList;MediaAlbum->showAsset</value>
-                                </numIndex>
-                                <numIndex index="2">
-                                    <label>
-                                        LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.switchableControllerActions.I.flatList
-                                    </label>
-                                    <value>MediaAlbum->flatList;MediaAlbum->showAlbum;MediaAlbum->showAsset</value>
-                                </numIndex>
-                                <numIndex index="3">
-                                    <label>
-                                        LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.switchableControllerActions.I.showAlbumByConfig
-                                    </label>
-                                    <value>MediaAlbum->showAlbumByConfig;MediaAlbum->showAsset</value>
-                                </numIndex>
-                                <numIndex index="4">
-                                    <label>
-                                        LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.switchableControllerActions.I.showAlbumByParam
-                                    </label>
-                                    <value>MediaAlbum->showAlbum;MediaAlbum->showAsset</value>
-                                </numIndex>
-                                <numIndex index="5">
-                                    <label>
-                                        LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.switchableControllerActions.I.randomAsset
-                                    </label>
-                                    <value>MediaAlbum->randomAsset</value>
-                                </numIndex>
-                            </items>
-                            <default>MediaAlbum->index</default>
-                            <size>1</size>
-                        </config>
-                    </switchableControllerActions>
                     <settings.mediaAlbumsUids>
                         <label>
                             LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.mediaAlbumsUids
                         </label>
-                        <displayCond>
-                            FIELD:switchableControllerActions:IN:MediaAlbum->nestedList;MediaAlbum->showAsset,MediaAlbum->randomAsset
-                        </displayCond>
                         <config>
                             <type>select</type>
                             <renderType>selectTree</renderType>
@@ -78,7 +22,7 @@
                                 </appearance>
                             </treeConfig>
                             <internal_type>db</internal_type>
-                            <size>5</size>
+                            <size>20</size>
                             <autoSizeMax>20</autoSizeMax>
                             <maxitems>1000</maxitems>
                             <minitems>0</minitems>
@@ -94,9 +38,6 @@
                         <label>
                             LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.useAlbumFilterAsExclude
                         </label>
-                        <displayCond>
-                            FIELD:switchableControllerActions:IN:MediaAlbum->nestedList;MediaAlbum->showAsset,MediaAlbum->randomAsset
-                        </displayCond>
                         <config>
                             <type>select</type>
                             <renderType>selectSingle</renderType>
@@ -123,35 +64,10 @@
                             <size>1</size>
                         </config>
                     </settings.useAlbumFilterAsExclude>
-                    <!-- single album selection -->
-                    <settings.mediaAlbum>
-                        <label>
-                            LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.mediaAlbum
-                        </label>
-                        <displayCond>
-                            FIELD:switchableControllerActions:IN:MediaAlbum->showAlbum;MediaAlbum->showAsset,MediaAlbum->showAlbumByConfig;MediaAlbum->showAsset
-                        </displayCond>
-                        <config>
-                            <type>group</type>
-                            <allowed>sys_file_collection</allowed>
-                            <size>1</size>
-                            <maxitems>1</maxitems>
-                            <minitems>0</minitems>
-                            <show_thumbs>1</show_thumbs>
-                            <wizards>
-                                <suggest>
-                                    <type>suggest</type>
-                                </suggest>
-                            </wizards>
-                        </config>
-                    </settings.mediaAlbum>
                     <settings.list.orderBy>
                         <label>
                             LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.list.orderBy
                         </label>
-                        <displayCond>
-                            FIELD:switchableControllerActions:IN:MediaAlbum->nestedList;MediaAlbum->showAsset,MediaAlbum->flatList;MediaAlbum->showAlbum;MediaAlbum->showAsset
-                        </displayCond>
                         <config>
                             <type>select</type>
                             <renderType>selectSingle</renderType>
@@ -189,9 +105,6 @@
                         <label>
                             LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.list.orderDirection
                         </label>
-                        <displayCond>
-                            FIELD:switchableControllerActions:IN:MediaAlbum->nestedList;MediaAlbum->showAsset,MediaAlbum->flatList;MediaAlbum->showAlbum;MediaAlbum->showAsset
-                        </displayCond>
                         <config>
                             <type>select</type>
                             <renderType>selectSingle</renderType>
@@ -288,9 +201,6 @@
                 <sheetTitle>
                     LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.tabs.list
                 </sheetTitle>
-                <displayCond>
-                    FIELD:general.switchableControllerActions:IN:MediaAlbum->nestedList;MediaAlbum->showAsset,MediaAlbum->flatList;MediaAlbum->showAlbum;MediaAlbum->showAsset
-                </displayCond>
                 <type>array</type>
                 <el>
                     <settings.list.pagination.itemsPerPage>
@@ -418,9 +328,6 @@
                 <sheetTitle>
                     LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.tabs.album
                 </sheetTitle>
-                <displayCond>
-                    FIELD:general.switchableControllerActions:IN:MediaAlbum->nestedList;MediaAlbum->showAsset,MediaAlbum->flatList;MediaAlbum->showAlbum;MediaAlbum->showAsset,MediaAlbum->showAlbum;MediaAlbum->showAsset,MediaAlbum->showAlbumByConfig;MediaAlbum->showAsset
-                </displayCond>
                 <type>array</type>
                 <el>
                     <settings.album.assets.orderBy>
@@ -629,9 +536,6 @@
                 <sheetTitle>
                     LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.tabs.detail
                 </sheetTitle>
-                <displayCond>
-                    FIELD:general.switchableControllerActions:IN:MediaAlbum->nestedList;MediaAlbum->showAsset,MediaAlbum->flatList;MediaAlbum->showAlbum;MediaAlbum->showAsset,MediaAlbum->showAlbum;MediaAlbum->showAsset,MediaAlbum->showAlbumByConfig;MediaAlbum->showAsset
-                </displayCond>
                 <type>array</type>
                 <el>
                     <settings.detail.asset.width>
@@ -694,91 +598,5 @@
                 </el>
             </ROOT>
         </detail>
-        <random>
-            <ROOT>
-                <sheetTitle>
-                    LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.tabs.random
-                </sheetTitle>
-                <displayCond>FIELD:general.switchableControllerActions:IN:MediaAlbum->randomAsset</displayCond>
-                <type>array</type>
-                <el>
-                    <settings.random.targetPid>
-                        <label>
-                            LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.random.targetPid
-                        </label>
-                        <config>
-                            <type>group</type>
-                            <allowed>pages</allowed>
-                            <size>1</size>
-                            <maxitems>1</maxitems>
-                            <minitems>0</minitems>
-                            <show_thumbs>1</show_thumbs>
-                            <wizards>
-                                <suggest>
-                                    <type>suggest</type>
-                                </suggest>
-                            </wizards>
-                        </config>
-                    </settings.random.targetPid>
-                    <settings.random.thumb.width>
-                        <label>
-                            LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.random.thumb.width
-                        </label>
-                        <config>
-                            <type>input</type>
-                            <eval>num</eval>
-                            <size>4</size>
-                            <max>4</max>
-                        </config>
-                    </settings.random.thumb.width>
-                    <settings.random.thumb.height>
-                        <label>
-                            LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.mediagallery.random.thumb.height
-                        </label>
-                        <config>
-                            <type>input</type>
-                            <eval>num</eval>
-                            <size>4</size>
-                            <max>4</max>
-                        </config>
-                    </settings.random.thumb.height>
-                    <settings.random.thumb.resizeMode>
-                        <label>
-                            LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.general.resizeMode
-                        </label>
-                        <config>
-                            <type>select</type>
-                            <renderType>selectSingle</renderType>
-                            <items type="array">
-                                <numIndex index="1" type="array">
-                                    <label>
-                                        LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.general.I.inherit
-                                    </label>
-                                    <value></value>
-                                </numIndex>
-                                <numIndex index="2" type="array">
-                                    <label>
-                                        LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.general.resizeMode.I.m
-                                    </label>
-                                    <value>m</value>
-                                </numIndex>
-                                <numIndex index="3" type="array">
-                                    <label>
-                                        LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.general.resizeMode.I.c
-                                    </label>
-                                    <value>c</value>
-                                </numIndex>
-                                <numIndex index="4" type="array">
-                                    <label>
-                                        LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:flexforms.general.resizeMode.I.s
-                                    </label>
-                                    <value>s</value>
-                                </numIndex>
-                            </items>
-                        </config>
-                    </settings.random.thumb.resizeMode>
-                </el>
-            </ROOT>
-        </random>
     </sheets>
 </T3DataStructure>

@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
 namespace MiniFranske\FsMediaGallery\Utility;
 
 /*                                                                        *
@@ -24,20 +32,16 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class TypoScriptUtility implements SingletonInterface
 {
-
     /**
-     * @param array $base
-     * @param array $overload
      * @return array
      */
     public function override(array $base, array $overload)
     {
         $validFields = GeneralUtility::trimExplode(',', $overload['settings']['overrideFlexformSettingsIfEmpty'], true);
         foreach ($validFields as $fieldName) {
-
             // Multilevel field
-            if (strpos($fieldName, '.') !== false) {
-                $keyAsArray = explode('.', $fieldName);
+            if (str_contains((string)$fieldName, '.')) {
+                $keyAsArray = explode('.', (string)$fieldName);
 
                 $foundInCurrentTs = $this->getValue($base, $keyAsArray);
 
@@ -49,7 +53,7 @@ class TypoScriptUtility implements SingletonInterface
                 }
             } else {
                 // if flexform setting is empty and value is available in TS
-                if ((!isset($base[$fieldName]) || (strlen($base[$fieldName]) === 0))
+                if ((!isset($base[$fieldName]) || (strlen((string)$base[$fieldName]) === 0))
                     && isset($overload['settings'][$fieldName])
                 ) {
                     $base[$fieldName] = $overload['settings'][$fieldName];
@@ -62,8 +66,6 @@ class TypoScriptUtility implements SingletonInterface
     /**
      * Get value from array by path
      *
-     * @param array $data
-     * @param array $path
      * @return array|null
      */
     protected function getValue(array $data, array $path)
@@ -89,7 +91,6 @@ class TypoScriptUtility implements SingletonInterface
     /**
      * Set value in array by path
      *
-     * @param array $array
      * @param $path
      * @param $value
      * @return array
@@ -104,8 +105,6 @@ class TypoScriptUtility implements SingletonInterface
     /**
      * Set value by reference
      *
-     * @param array $array
-     * @param array $path
      * @param $value
      */
     private function setValueByReference(array &$array, array $path, $value)
@@ -121,5 +120,4 @@ class TypoScriptUtility implements SingletonInterface
         $key = reset($path);
         $array[$key] = $value;
     }
-
 }

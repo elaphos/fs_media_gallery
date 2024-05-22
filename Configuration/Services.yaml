@@ -4,16 +4,26 @@ services:
     autoconfigure: true
     public: false
 
+  MiniFranske\FsMediaGallery\:
+    resource: "../Classes/*"
+    exclude: "../Classes/Domain/Model/*"
+
+  # EventListener to add button to ButtonBar of BE modules
+  MiniFranske\FsMediaGallery\EventListener\DocHeaderButtonsEventListener:
+    tags:
+      - name: event.listener
+        event: TYPO3\CMS\Backend\Template\Components\ModifyButtonBarEvent
+
   MiniFranske\FsMediaGallery\Service\Utility: ~
 
-  MiniFranske\FsMediaGallery\Listeners\IconFactoryListener:
+  MiniFranske\FsMediaGallery\EventListener\IconFactoryEventListener:
     tags:
       - name: event.listener
         identifier: 'album-change'
         method: 'buildIconForResource'
         event: TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent
 
-  MiniFranske\FsMediaGallery\Listeners\FolderChangedListener:
+  MiniFranske\FsMediaGallery\EventListener\FolderChangedEventListener:
     tags:
       - name: event.listener
         identifier: 'album-change'

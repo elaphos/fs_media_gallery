@@ -14,6 +14,41 @@
 				<source>Show your assets from your local or remote storage as a gallery of albums.</source>
 			</trans-unit>
 
+			<trans-unit id="mediagallery.nestedList.title">
+				<source>Nested List</source>
+			</trans-unit>
+			<trans-unit id="mediagallery.nestedList.description">
+				<source>Show your assets in a nested list. This plugin also contains a detail view.</source>
+			</trans-unit>
+
+			<trans-unit id="mediagallery.flatList.title">
+				<source>Flat List</source>
+			</trans-unit>
+			<trans-unit id="mediagallery.flatList.description">
+				<source>Show your assets in a flat list. This plugin also contains a detail view.</source>
+			</trans-unit>
+
+			<trans-unit id="mediagallery.showAlbumByConfig.title">
+				<source>Show Album By Config</source>
+			</trans-unit>
+			<trans-unit id="mediagallery.showAlbumByConfig.description">
+				<source>Single album (URL handover disabled)</source>
+			</trans-unit>
+
+			<trans-unit id="mediagallery.showAlbum.title">
+				<source>Show Album</source>
+			</trans-unit>
+			<trans-unit id="mediagallery.showAlbum.description">
+				<source>Single album (URL handover enabled)</source>
+			</trans-unit>
+
+			<trans-unit id="mediagallery.randomAsset.title">
+				<source>Random media asset</source>
+			</trans-unit>
+			<trans-unit id="mediagallery.randomAsset.description">
+				<source>Show random asset</source>
+			</trans-unit>
+
 			<!--
 				FLEXFORMS
 			-->

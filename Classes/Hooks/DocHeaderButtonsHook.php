@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
 namespace MiniFranske\FsMediaGallery\Hooks;
 
 /***************************************************************
@@ -27,7 +35,9 @@ namespace MiniFranske\FsMediaGallery\Hooks;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use MiniFranske\FsMediaGallery\Event\DocHeaderButtonsEventListener;
 use MiniFranske\FsMediaGallery\Service\AbstractBeAlbumButtons;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -42,7 +52,7 @@ class DocHeaderButtonsHook extends AbstractBeAlbumButtons
         return [
             'title' => $title,
             'icon' => $icon,
-            'url' => $url . ($addReturnUrl ? '&returnUrl=' . rawurlencode($_SERVER['REQUEST_URI']) : '')
+            'url' => $url . ($addReturnUrl ? '&returnUrl=' . rawurlencode((string)$_SERVER['REQUEST_URI']) : ''),
         ];
     }
 
@@ -52,22 +62,36 @@ class DocHeaderButtonsHook extends AbstractBeAlbumButtons
     public function moduleTemplateDocHeaderGetButtons(array $params, ButtonBar $buttonBar): array
     {
         $buttons = $params['buttons'];
-        if (GeneralUtility::_GP('M') === 'file_FilelistList'
-            || GeneralUtility::_GP('route') === '/file/FilelistList/'
-            || GeneralUtility::_GP('route') === '/module/file/FilelistList'
+
+        // Erstellen Sie eine Instanz des Event-Objekts
+        $event = new DocHeaderButtonsEventListener($params, $buttonBar);
+
+        // Feuern Sie das Event und lassen Sie die Listener die Arbeit erledigen
+        GeneralUtility::makeInstance(EventDispatcherInterface::class)->dispatch($event);
+
+        // Überprüfen Sie, ob die Propagation gestoppt wurde
+        if ($event->isStopped()) {
+            // Falls gestoppt, kehren Sie zurück
+            return $buttons;
+        }
+
+        if (
+            $buttons->getParsedBody()['M'] ?? $buttons->getQueryParams()['M'] ?? null === 'file_FilelistList'
+            || $buttons->getParsedBody()['route'] ?? $buttons->getQueryParams()['route'] ?? null === '/file/FilelistList/'
+            || $buttons->getParsedBody()['route'] ?? $buttons->getQueryParams()['route'] ?? null === '/module/file/FilelistList'
         ) {
-            foreach ($this->generateButtons((string)GeneralUtility::_GP('id')) as $buttonInfo) {
+            foreach ($this->generateButtons((string)$buttons->getParsedBody()['id'] ?? $buttons->getQueryParams()['id'] ?? null) as $buttonInfo) {
                 $button = $buttonBar->makeLinkButton();
                 $button->setShowLabelText(true);
                 $button->setIcon($buttonInfo['icon']);
                 $button->setTitle($buttonInfo['title']);
-                if (strpos($buttonInfo['url'], 'alert') === 0) {
+                if (str_starts_with((string)$buttonInfo['url'], 'alert')) {
                     // using CSS class to trigger confirmation in modal box
                     $button->setClasses('t3js-modal-trigger')
                         ->setDataAttributes([
                             'severity' => 'warning',
                             'title' => $buttonInfo['title'],
-                            'bs-content' => htmlspecialchars(substr($buttonInfo['url'], 6)),
+                            'bs-content' => htmlspecialchars(substr((string)$buttonInfo['url'], 6)),
                         ]);
                 } else {
                     $button->setHref($buttonInfo['url']);

@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
 namespace MiniFranske\FsMediaGallery\Controller;
 
 /***************************************************************
@@ -29,20 +37,22 @@ namespace MiniFranske\FsMediaGallery\Controller;
  ***************************************************************/
 
 use GeorgRinger\NumberedPagination\NumberedPagination;
+use MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum;
+use MiniFranske\FsMediaGallery\Domain\Repository\MediaAlbumRepository;
 use MiniFranske\FsMediaGallery\Pagination\ExtendedArrayPaginator;
 use MiniFranske\FsMediaGallery\Utility\TypoScriptUtility;
-use MiniFranske\FsMediaGallery\Domain\Repository\MediaAlbumRepository;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Http\ImmediateResponseException;
 use TYPO3\CMS\Core\Pagination\ArrayPaginator;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
-use TYPO3\CMS\Extbase\Http\ForwardResponse;
-use TYPO3\CMS\Frontend\Controller\ErrorController;
-use TYPO3\CMS\Core\Http\ImmediateResponseException;
-use MiniFranske\FsMediaGallery\Domain\Model\MediaAlbum;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Annotation\IgnoreValidation;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Http\ForwardResponse;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Mvc\Controller\Arguments;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Frontend\Controller\ErrorController;
 
 /**
  * MediaAlbumController
@@ -55,7 +65,6 @@ class MediaAlbumController extends ActionController
      * Injects the Configuration Manager
      *
      * @param ConfigurationManagerInterface $configurationManager Instance of the Configuration Manager
-     * @return void
      */
     public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager)
     {
@@ -90,7 +99,9 @@ class MediaAlbumController extends ActionController
             $this->settings['startingpoint'] = $frameworkSettings['persistence']['storagePid'];
             // startingpoint/storagePid is not set via TS nor flexforms > fallback to current pid
         } else {
-            $this->settings['startingpoint'] = $frameworkSettings['persistence']['storagePid'] = $GLOBALS['TSFE']->id;
+            // $this->settings['startingpoint'] = $frameworkSettings['persistence']['storagePid'] = $GLOBALS['TSFE']->id;
+            // $GLOBALS['TSFE'] is deprecated in TYPO3 v12
+            $this->settings['startingpoint'] = $frameworkSettings['persistence']['storagePid'] = $GLOBALS['TYPO3_REQUEST']->getQueryParams()['id'] ?? $frameworkSettings['persistence']['storagePid'];
         }
 
         // set persistence.recursive if settings.recursive is defined in flexform
@@ -127,22 +138,22 @@ class MediaAlbumController extends ActionController
         if (isset($this->settings['random']['thumb']['resizeMode']) && $this->settings['random']['thumb']['resizeMode'] == 's') {
             $this->settings['random']['thumb']['resizeMode'] = '';
         }
+
+        $this->arguments = GeneralUtility::makeInstance(Arguments::class);
     }
 
     /**
      * Injects the MediaAlbumRepository
-     *
-     * @param MediaAlbumRepository $mediaAlbumRepository
-     * @return void
      */
     public function injectMediaAlbumRepository(
         MediaAlbumRepository $mediaAlbumRepository
-    )
-    {
+    ) {
         $this->mediaAlbumRepository = $mediaAlbumRepository;
         if (!empty($this->settings['allowedAssetMimeTypes'])) {
-            $this->mediaAlbumRepository->setAllowedAssetMimeTypes(GeneralUtility::trimExplode(',',
-                $this->settings['allowedAssetMimeTypes']));
+            $this->mediaAlbumRepository->setAllowedAssetMimeTypes(GeneralUtility::trimExplode(
+                ',',
+                $this->settings['allowedAssetMimeTypes']
+            ));
         }
         if (isset($this->settings['album']['assets']['orderBy'])) {
             $this->mediaAlbumRepository->setAssetsOrderBy($this->settings['album']['assets']['orderBy']);
@@ -202,43 +213,59 @@ class MediaAlbumController extends ActionController
          * No album selected and album restriction set, find all "root" albums
          * Albums without parent or with parent not selected as allowed
          */
-        if ($mediaAlbum === null && $this->mediaAlbumRepository->getAlbumUids() !== []) {
+        if ($mediaAlbumId === null && $this->mediaAlbumRepository->getAlbumUids() !== []) {
             $mediaAlbums = [];
             $all = $this->mediaAlbumRepository->findAll((bool)$this->settings['list']['hideEmptyAlbums'], $this->settings['list']['orderBy'], $this->settings['list']['orderDirection']);
             foreach ($all as $album) {
                 $parent = $album->getParentalbum();
-                if ($parent === null
-                    || (!$this->mediaAlbumRepository->getUseAlbumUidsAsExclude() && !in_array($parent->getUid(),
-                            $this->mediaAlbumRepository->getAlbumUids()))
-                    || ($this->mediaAlbumRepository->getUseAlbumUidsAsExclude() && in_array($parent->getUid(),
-                            $this->mediaAlbumRepository->getAlbumUids()))
+                if (
+                    $parent === null
+                    || (!$this->mediaAlbumRepository->getUseAlbumUidsAsExclude() && !in_array(
+                        $parent->getUid(),
+                        $this->mediaAlbumRepository->getAlbumUids()
+                    ))
+                    || ($this->mediaAlbumRepository->getUseAlbumUidsAsExclude() && in_array(
+                        $parent->getUid(),
+                        $this->mediaAlbumRepository->getAlbumUids()
+                    ))
                 ) {
                     $mediaAlbums[] = $album;
                 }
             }
         } else {
-            $mediaAlbums = $this->mediaAlbumRepository->findByParentAlbum($mediaAlbum,
-                $this->settings['list']['hideEmptyAlbums'], $this->settings['list']['orderBy'],
-                $this->settings['list']['orderDirection']);
+            $mediaAlbums = $this->mediaAlbumRepository->findByParentAlbum(
+                $mediaAlbum,
+                $this->settings['list']['hideEmptyAlbums'],
+                $this->settings['list']['orderBy'],
+                $this->settings['list']['orderDirection']
+            );
         }
 
         // when only 1 album skip gallery view
-        if ($mediaAlbum === null && !empty($this->settings['list']['skipListWhenOnlyOneAlbum']) && count($mediaAlbums) === 1) {
+        if ($mediaAlbumId === null && !empty($this->settings['list']['skipListWhenOnlyOneAlbum']) && count($mediaAlbums) === 1) {
             $mediaAlbum = $mediaAlbums[0];
-            $mediaAlbums = $this->mediaAlbumRepository->findByParentAlbum($mediaAlbum,
-                $this->settings['list']['hideEmptyAlbums'], $this->settings['list']['orderBy'],
-                $this->settings['list']['orderDirection']);
+            $mediaAlbums = $this->mediaAlbumRepository->findByParentAlbum(
+                $mediaAlbum,
+                $this->settings['list']['hideEmptyAlbums'],
+                $this->settings['list']['orderBy'],
+                $this->settings['list']['orderDirection']
+            );
             $showBackLink = false;
         }
 
-        if ($mediaAlbum && $mediaAlbum->getParentalbum() && (
+        if (
+            $mediaAlbum && $mediaAlbum->getParentalbum() && (
                 $this->mediaAlbumRepository->getAlbumUids() === []
                 ||
-                (!$this->mediaAlbumRepository->getUseAlbumUidsAsExclude() && in_array($mediaAlbum->getParentalbum()->getUid(),
-                        $this->mediaAlbumRepository->getAlbumUids()))
+                (!$this->mediaAlbumRepository->getUseAlbumUidsAsExclude() && in_array(
+                    $mediaAlbum->getParentalbum()->getUid(),
+                    $this->mediaAlbumRepository->getAlbumUids()
+                ))
                 ||
-                ($this->mediaAlbumRepository->getUseAlbumUidsAsExclude() && !in_array($mediaAlbum->getParentalbum()->getUid(),
-                        $this->mediaAlbumRepository->getAlbumUids()))
+                ($this->mediaAlbumRepository->getUseAlbumUidsAsExclude() && !in_array(
+                    $mediaAlbum->getParentalbum()->getUid(),
+                    $this->mediaAlbumRepository->getAlbumUids()
+                ))
             )
         ) {
             $this->view->assign('parentAlbum', $mediaAlbum->getParentalbum());
@@ -278,8 +305,11 @@ class MediaAlbumController extends ActionController
             $this->view->assign('mediaAlbum', $mediaAlbum);
         } else {
             // display the album list
-            $mediaAlbums = $this->mediaAlbumRepository->findAll($this->settings['list']['hideEmptyAlbums'],
-            $this->settings['list']['orderBy'], $this->settings['list']['orderDirection']);
+            $mediaAlbums = $this->mediaAlbumRepository->findAll(
+                $this->settings['list']['hideEmptyAlbums'],
+                $this->settings['list']['orderBy'],
+                $this->settings['list']['orderDirection']
+            );
             $this->view->assign('displayMode', 'flatList');
             $this->view->assign('mediaAlbums', $mediaAlbums);
             $showBackLink = false;
@@ -341,14 +371,11 @@ class MediaAlbumController extends ActionController
     /**
      * Show single media asset from album
      *
-     * @param MediaAlbum $mediaAlbum
-     * @param int $mediaAssetUid
-     * @TYPO3\CMS\Extbase\Annotation\IgnoreValidation("")
      * @throws ImmediateResponseException
      */
+    #[IgnoreValidation(['value' => ''])]
     public function showAssetAction(MediaAlbum $mediaAlbum, int $mediaAssetUid): ResponseInterface
     {
-
         if (isset($this->settings['album']['assets']['orderBy'])) {
             $mediaAlbum->setAssetsOrderBy($this->settings['album']['assets']['orderBy']);
         }
@@ -357,7 +384,7 @@ class MediaAlbumController extends ActionController
             $mediaAlbum->setAssetsOrderDirection($this->settings['album']['assets']['orderDirection']);
         }
 
-        list($previousAsset, $mediaAsset, $nextAsset) = $mediaAlbum->getPreviousCurrentAndNext($mediaAssetUid);
+        [$previousAsset, $mediaAsset, $nextAsset] = $mediaAlbum->getPreviousCurrentAndNext($mediaAssetUid);
         if (!$mediaAsset) {
             $message = LocalizationUtility::translate('asset_not_found', 'fs_media_gallery');
             return $this->pageNotFound((empty($message) ? 'Asset not found.' : $message));
@@ -375,7 +402,6 @@ class MediaAlbumController extends ActionController
      */
     public function randomAssetAction(): ResponseInterface
     {
-
         $this->setAlbumUidRestrictions();
 
         $mediaAlbum = $this->mediaAlbumRepository->findRandom();
@@ -388,7 +414,7 @@ class MediaAlbumController extends ActionController
      * If there were validation errors, we don't want to write details like
      * "An error occurred while trying to call Tx_Community_Controller_UserController->updateAction()"
      *
-     * @return string|boolean The flash message or FALSE if no flash message should be set
+     * @return string|bool The flash message or FALSE if no flash message should be set
      */
     protected function getErrorFlashMessage(): bool
     {
@@ -455,5 +481,4 @@ class MediaAlbumController extends ActionController
             'pagination' => $pagination,
         ];
     }
-
 }

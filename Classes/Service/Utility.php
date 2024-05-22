@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
 namespace MiniFranske\FsMediaGallery\Service;
 
 /***************************************************************
@@ -27,9 +35,8 @@ namespace MiniFranske\FsMediaGallery\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
-use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
@@ -37,6 +44,7 @@ use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\DataHandling\SlugHelper;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\FolderInterface;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -44,7 +52,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class Utility implements SingletonInterface
 {
-
     /**
      * Get storage folders marked as media gallery
      *
@@ -55,7 +62,6 @@ class Utility implements SingletonInterface
         $pages = [];
 
         if ($this->getBeUser()) {
-
             $q = $this->getDatabaseConnection()->createQueryBuilder();
 
             $q->getRestrictions()
@@ -67,14 +73,14 @@ class Utility implements SingletonInterface
             $q->select('uid', 'title')
                 ->from('pages')
                 ->where(
-                    $q->expr()->andX(
+                    $q->expr()->and(
                         $q->expr()->eq('doktype', 254),
                         $q->expr()->in('module', $quotedIdentifiers)
                     )
                 )
                 ->orderBy('title');
 
-            $statement = $q->execute();
+            $statement = $q->executeQuery();
             while ($row = $statement->fetchAssociative()) {
                 if (BackendUtility::readPageAccess($row['uid'], $this->getBeUser()->getPagePermsClause(1))) {
                     $pages[$row['uid']] = $row['title'];
@@ -87,8 +93,6 @@ class Utility implements SingletonInterface
 
     /**
      * Clear pageCache defined at the storage of the collection/album
-     *
-     * @param FolderInterface $folder
      */
     public function clearMediaGalleryPageCache(FolderInterface $folder)
     {
@@ -135,7 +139,7 @@ class Utility implements SingletonInterface
                 $parentFolder->getIdentifier(),
                 [$mediaFolderUid]
             );
-            if (!count($parentCollection) && $parentFolder instanceof Folder) {
+            if (!count((array)$parentCollection) && $parentFolder instanceof Folder) {
                 $parentCollection = $this->getFirstParentCollections($parentFolder, $mediaFolderUid);
             }
         }
@@ -150,8 +154,9 @@ class Utility implements SingletonInterface
     public function updateFolderRecord(int $oldStorageUid, string $oldIdentifier, int $newStorageUid, string $newIdentifier, ?int $newParentAlbum = 0): void
     {
         $updatedData = [
-            'storage' => $newStorageUid,
-            'folder' => $newIdentifier
+            //'storage' => $newStorageUid,
+            'folder_identifier' => $newStorageUid . ':' . $newIdentifier,
+            //'folder' => $newIdentifier
         ];
 
         if ($newParentAlbum !== null) {
@@ -162,8 +167,9 @@ class Utility implements SingletonInterface
             'sys_file_collection',
             $updatedData,
             [
-                'storage' => $oldStorageUid,
-                'folder' => $oldIdentifier,
+                //'storage' => $oldStorageUid,
+                'folder_identifier' => $oldStorageUid . ':' . $oldIdentifier,
+                //'folder' => $oldIdentifier,
             ]
         );
     }
@@ -179,7 +185,11 @@ class Utility implements SingletonInterface
         $this->getDatabaseConnection()->update(
             'sys_file_collection',
             ['deleted' => 1],
-            ['folder' => $identifier, 'storage' => $storageUid]
+            [
+                //'folder' => $identifier,
+                //'storage' => $storageUid
+                'folder_identifier' => $storageUid . ':' . $identifier,
+            ]
         );
     }
 
@@ -199,8 +209,9 @@ class Utility implements SingletonInterface
             'deleted' => 0,
             'hidden' => 0,
             'type' => 'folder',
-            'storage' => (int)$storageUid,
-            'folder' => $identifier,
+            'folder_identifier' => (int)$storageUid . ':' . $identifier,
+            //'storage' => (int)$storageUid,
+            //'folder' => $identifier,
             'title' => $title,
             'parentalbum' => (int)$parentAlbum,
             'webdescription' => '',
@@ -222,7 +233,7 @@ class Utility implements SingletonInterface
     }
 
     /**
-     * @param null|int[] $pids
+     * @param int[]|null $pids
      */
     public function findFileCollectionRecordsForFolder(int $storageUid, string $folder, ?array $pids = null): ?array
     {
@@ -235,9 +246,10 @@ class Utility implements SingletonInterface
         $q->select('uid', 'pid', 'title', 'type', 'hidden', 'parentalbum')
             ->from('sys_file_collection')
             ->where(
-                $q->expr()->andX(
-                    $q->expr()->eq('storage', $q->createNamedParameter($storageUid, Connection::PARAM_INT)),
-                    $q->expr()->eq('folder', $q->createNamedParameter($folder))
+                $q->expr()->and(
+                    // $q->expr()->eq('storage', $q->createNamedParameter($storageUid, Connection::PARAM_INT)),
+                    $q->expr()->eq('folder_identifier', $q->createNamedParameter($storageUid . ':' . $folder, Connection::PARAM_STR)),
+                    // $q->expr()->eq('folder', $q->createNamedParameter($folder))
                 )
             );
 
@@ -247,7 +259,7 @@ class Utility implements SingletonInterface
             );
         }
 
-        return $q->execute()->fetchAllAssociative();
+        return $q->executeQuery()->fetchAllAssociative();
     }
 
     protected function getDatabaseConnection(string $table = 'sys_file_collection'): Connection

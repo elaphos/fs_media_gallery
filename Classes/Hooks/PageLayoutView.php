@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
 namespace MiniFranske\FsMediaGallery\Hooks;
 
 /*
@@ -9,12 +17,13 @@ namespace MiniFranske\FsMediaGallery\Hooks;
  * Date: 28-09-2016
  * All code (c) Beech Applications B.V. all rights reserved
  */
+
 use TYPO3\CMS\Backend\Utility\BackendUtility as BackendUtilityCore;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Database\Connection;
 
 /**
  * Class PageLayoutView
@@ -24,12 +33,9 @@ class PageLayoutView
     /**
      * @var string
      */
-    const LLPATH = 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:';
+    final public const LLPATH = 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf:';
 
-    /**
-     * @var array
-     */
-    private $summaryData = [];
+    private array $summaryData = [];
 
     /**
      * @var array
@@ -71,20 +77,17 @@ class PageLayoutView
             $actionList = GeneralUtility::trimExplode(';', $actions);
 
             // translate the first action into its translation
-            $action = str_replace('MediaAlbum->', '', $actionList[0]);
+            $action = str_replace('MediaAlbum->', '', (string)$actionList[0]);
         }
         return $action;
     }
 
     private function getDisplayMode(string $action): string
     {
-        switch ($action) {
-            case 'showalbum';
-                $actionTranslationKey = 'showAlbumByParam';
-                break;
-            default:
-                $actionTranslationKey = $action;
-        }
+        $actionTranslationKey = match ($action) {
+            'showalbum' => 'showAlbumByParam',
+            default => $action,
+        };
         return $this->getLanguageService()->sL(self::LLPATH . 'flexforms.mediagallery.switchableControllerActions.I.' . $actionTranslationKey);
     }
 
@@ -94,7 +97,7 @@ class PageLayoutView
      *
      * @param string $key name of the key
      * @param string $sheet name of the sheet
-     * @return string|NULL if nothing found, value if found
+     * @return string|null if nothing found, value if found
      */
     private function getFieldFromFlexform(string $key, string $sheet = 'general'): ?string
     {
@@ -118,8 +121,8 @@ class PageLayoutView
 
             $this->summaryData[] = [
                 $this->getLanguageService()->sL(self::LLPATH . 'flexforms.mediagallery.mediaAlbum') .
-                '<br />',
-                implode(', ', $albums)
+                    '<br />',
+                implode(', ', $albums),
             ];
         }
     }
@@ -130,8 +133,7 @@ class PageLayoutView
         $albums = [];
 
         $albumUids = GeneralUtility::intExplode(',', $this->getFieldFromFlexform('settings.mediaAlbumsUids'), true);
-        if (count($albumUids) > 0) {
-
+        if ((is_countable($albumUids) ? count($albumUids) : 0) > 0) {
             // Filter mode
             $selectedFilerMode = $this->getFieldFromFlexform('settings.useAlbumFilterAsExclude');
 
@@ -154,7 +156,7 @@ class PageLayoutView
                     $q->expr()->in('uid', $quotedIdentifiers)
                 );
 
-            $rowSysFileCollectionRecords = $q->execute()->fetchAllAssociative();
+            $rowSysFileCollectionRecords = $q->executeQuery()->fetchAllAssociative();
 
             foreach ($rowSysFileCollectionRecords as $record) {
                 $albums[] = htmlspecialchars(BackendUtilityCore::getRecordTitle('sys_file_collection', $record));
@@ -162,8 +164,8 @@ class PageLayoutView
 
             $this->summaryData[] = [
                 $this->getLanguageService()->sL(self::LLPATH . 'flexforms.mediagallery.mediaAlbumsUids') .
-                '<br />' . $filterMode,
-                implode(', ', $albums)
+                    '<br />' . $filterMode,
+                implode(', ', $albums),
             ];
         }
     }
@@ -184,11 +186,13 @@ class PageLayoutView
                     $q->expr()->in('uid', $quotedIdentifiers)
                 );
 
-            $rawPagesRecords = $q->execute()->fetchAllAssociative();
+            $rawPagesRecords = $q->executeQuery()->fetchAllAssociative();
 
             foreach ($rawPagesRecords as $page) {
-                $pagesOut[] = htmlspecialchars(BackendUtilityCore::getRecordTitle('pages',
-                        $page)) . ' (' . $page['uid'] . ')';
+                $pagesOut[] = htmlspecialchars(BackendUtilityCore::getRecordTitle(
+                    'pages',
+                    $page
+                )) . ' (' . $page['uid'] . ')';
             }
 
             $recursiveLevel = (int)$this->getFieldFromFlexform('settings.recursive');
@@ -207,7 +211,7 @@ class PageLayoutView
 
             $this->summaryData[] = [
                 $this->getLanguageService()->sL('LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.startingpoint'),
-                implode(', ', $pagesOut) . $recursiveLevelText
+                implode(', ', $pagesOut) . $recursiveLevelText,
             ];
         }
     }

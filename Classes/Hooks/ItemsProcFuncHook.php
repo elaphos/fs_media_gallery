@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
 namespace MiniFranske\FsMediaGallery\Hooks;
 
 /*                                                                        *
@@ -22,12 +30,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ItemsProcFuncHook
 {
-
     /**
      * Sets the available actions for settings.switchableControllerActions
-     *
-     * @param array &$config
-     * @return void
      */
     public function getItemsForSwitchableControllerActions(array &$config)
     {
@@ -66,9 +70,6 @@ class ItemsProcFuncHook
 
     /**
      * Sets the available options for settings.list.orderBy
-     *
-     * @param array &$config
-     * @return void
      */
     public function getItemsForListOrderBy(array &$config)
     {
@@ -94,9 +95,6 @@ class ItemsProcFuncHook
 
     /**
      * Sets the available options for settings.album.assets.orderBy
-     *
-     * @param array &$config
-     * @return void
      */
     public function getItemsForAssetsOrderBy(array &$config)
     {

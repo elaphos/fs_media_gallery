@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
 namespace MiniFranske\FsMediaGallery\Hooks;
 
 /***************************************************************
@@ -27,23 +35,20 @@ namespace MiniFranske\FsMediaGallery\Hooks;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
 
 /**
  * Hooks called after sys_file_collection is added/updated/deleted
  */
 class ProcessDatamapHook
 {
-
     /**
      * Trigger updateFolderTree after change in sys_file_collection
      *
      * @param string $status
      * @param string $table
      * @param $id
-     * @param array $fieldArray
-     * @param DataHandler $dataHandler
      */
     public function processDatamap_afterDatabaseOperations(
         $status,
@@ -63,18 +68,14 @@ class ProcessDatamapHook
      * @param string $command
      * @param string $table
      * @param int $id
-     * @param mixed $value
-     * @param DataHandler $dataHandler
-     * @param mixed $pasteUpdate
-     * @param array $pasteDatamap
      */
     public function processCmdmap_postProcess(
         $command,
         $table,
         $id,
-        $value,
+        mixed $value,
         DataHandler $dataHandler,
-        $pasteUpdate,
+        mixed $pasteUpdate,
         array $pasteDatamap
     ) {
         if ($table === 'sys_file_collection') {

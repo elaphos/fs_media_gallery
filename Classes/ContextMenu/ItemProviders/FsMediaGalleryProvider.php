@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
+
 namespace MiniFranske\FsMediaGallery\ContextMenu\ItemProviders;
 
 use MiniFranske\FsMediaGallery\Service\Utility;
@@ -11,6 +19,9 @@ use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * This provider add a new item to the context menu of folders to turn them into a gallery.
+ */
 class FsMediaGalleryProvider extends AbstractProvider
 {
     protected $itemsConfiguration = [];
@@ -68,18 +79,16 @@ class FsMediaGalleryProvider extends AbstractProvider
         $utility = GeneralUtility::makeInstance(Utility::class);
         $mediaFolders = $utility->getStorageFolders();
 
-        if (count($mediaFolders) === 0) {
-
+        if ((is_countable($mediaFolders) ? count($mediaFolders) : 0) === 0) {
             $this->itemsConfiguration['add-media-gallery'] = [
                 'label' => $this->sL('module.buttons.createAlbum'),
                 'iconIdentifier' => 'action-add-album',
                 'callbackAction' => 'missingMediaFolder',
-                'title' => $this->sL('module.alerts.firstCreateStorageFolder')
+                'title' => $this->sL('module.alerts.firstCreateStorageFolder'),
             ];
         }
 
-        if (count($mediaFolders) > 0) {
-
+        if ((is_countable($mediaFolders) ? count($mediaFolders) : 0) > 0) {
             $collections = $utility->findFileCollectionRecordsForFolder(
                 $this->folder->getStorage()->getUid(),
                 $this->folder->getIdentifier(),
@@ -95,9 +104,8 @@ class FsMediaGalleryProvider extends AbstractProvider
                 ];
             }
 
-            if (!count($collections)) {
+            if (!count((array)$collections)) {
                 foreach ($mediaFolders as $uid => $title) {
-
                     // Find parent album for auto setting parent album
                     $parentUid = 0;
                     $parents = $utility->findFileCollectionRecordsForFolder(
@@ -107,7 +115,7 @@ class FsMediaGalleryProvider extends AbstractProvider
                     );
 
                     // If parent(s) found we take the first one
-                    if (count($parents)) {
+                    if (count((array)$parents)) {
                         $parentUid = $parents[0]['uid'];
                     }
 
@@ -154,13 +162,10 @@ class FsMediaGalleryProvider extends AbstractProvider
     /**
      * Get language string
      *
-     * @param string $key
-     * @param string $languageFile
      * @return string
      */
     protected function sL(string $key, string $languageFile = 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf'): string
     {
         return $this->languageService->sL($languageFile . ':' . $key);
     }
-
 }

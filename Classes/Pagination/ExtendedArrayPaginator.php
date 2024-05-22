@@ -1,5 +1,14 @@
 <?php
+
 declare(strict_types=1);
+
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
 
 namespace MiniFranske\FsMediaGallery\Pagination;
 
@@ -7,8 +16,6 @@ use TYPO3\CMS\Core\Pagination\AbstractPaginator;
 
 class ExtendedArrayPaginator extends AbstractPaginator
 {
-    private array $items;
-
     private array $paginatedItems = [];
 
     private array $itemsBefore = [];
@@ -16,12 +23,10 @@ class ExtendedArrayPaginator extends AbstractPaginator
     private array $itemsAfter = [];
 
     public function __construct(
-        array $items,
-        int   $currentPageNumber = 1,
-        int   $itemsPerPage = 10
-    )
-    {
-        $this->items = $items;
+        private readonly array $items,
+        int $currentPageNumber = 1,
+        int $itemsPerPage = 10
+    ) {
         $this->setCurrentPageNumber($currentPageNumber);
         $this->setItemsPerPage($itemsPerPage);
 
@@ -63,4 +68,3 @@ class ExtendedArrayPaginator extends AbstractPaginator
         return $this->itemsAfter;
     }
 }
-

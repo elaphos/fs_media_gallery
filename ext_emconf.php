@@ -1,8 +1,12 @@
 <?php
 
-/***************************************************************
- * Extension Manager/Repository config file for ext: "fs_media_gallery"
- ***************************************************************/
+/*
+ * Copyright (C) 2024 Christian Racan
+ * ----------------------------------------------
+ * new version of sf_media_gallery for TYPO3 v12
+ * The TYPO3 project - inspiring people to share!
+ * ----------------------------------------------
+ */
 
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Media Gallery',
@@ -12,18 +16,11 @@ Show your media assets from your local or remote storage as a gallery of albums.
     'author' => 'Frans Saris',
     'author_email' => 'franssaris@gmail.com',
     'author_company' => '',
-    'shy' => '',
-    'priority' => '',
-    'module' => '',
     'state' => 'stable',
-    'uploadfolder' => false,
-    'createDirs' => '',
-    'clearCacheOnLoad' => 1,
-    'lockType' => '',
-    'version' => '3.0.3',
+    'version' => '4.0.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '11.4.0-11.5.99',
+            'typo3' => '12.4.8-12.4.99',
         ],
         'conflicts' => [],
         'suggests' => [],
