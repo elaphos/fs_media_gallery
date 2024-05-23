@@ -25,7 +25,7 @@ foreach ($plugins as $pluginName)
     $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist'][$piKey] = 'layout,select_key,pages,recursive';
     $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist'][$piKey] = 'pi_flexform';
     ExtensionManagementUtility::addPiFlexFormValue(
-        'fsmediagallery_nestedlist',
+        $piKey,
         'FILE:EXT:fs_media_gallery/Configuration/FlexForms/flexform_'. strtolower($pluginName) .'.xml'
     );
 }
