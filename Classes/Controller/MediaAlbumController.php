@@ -168,18 +168,6 @@ class MediaAlbumController extends ActionController
     }
 
     /**
-     * Index Action
-     * As switchableControllerActions can be limited in EM this function
-     * is needed as default action (with no output).
-     * It is set as default action in flexform to make sure the
-     * correct tabs/fields are shown when a new plugin is added.
-     */
-    public function indexAction(): ResponseInterface
-    {
-        return $this->htmlResponse('<i>Please select a display mode in the plugin.</i>');
-    }
-
-    /**
      * NestedList Action
      * Displays a (nested) list of albums; default/show action in fs_media_gallery <= 1.0.0
      *
