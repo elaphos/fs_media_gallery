@@ -58,10 +58,41 @@ class MediaAlbumController extends ActionController
      *
      * @param ConfigurationManagerInterface $configurationManager Instance of the Configuration Manager
      */
-    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager)
+    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager): void
     {
         $this->configurationManager = $configurationManager;
+    }
 
+    /**
+     * Injects the MediaAlbumRepository
+     */
+    public function injectMediaAlbumRepository(MediaAlbumRepository $mediaAlbumRepository): void
+    {
+        $this->mediaAlbumRepository = $mediaAlbumRepository;
+    }
+
+    public function __construct()
+    {
+        $this->arguments = GeneralUtility::makeInstance(Arguments::class);
+    }
+
+    protected function initializeAction(): void
+    {
+        // Settings MediaAlbumRepository
+        if (!empty($this->settings['allowedAssetMimeTypes'])) {
+            $this->mediaAlbumRepository->setAllowedAssetMimeTypes(GeneralUtility::trimExplode(
+                ',',
+                $this->settings['allowedAssetMimeTypes']
+            ));
+        }
+        if (isset($this->settings['album']['assets']['orderBy'])) {
+            $this->mediaAlbumRepository->setAssetsOrderBy($this->settings['album']['assets']['orderBy']);
+        }
+        if (isset($this->settings['album']['assets']['orderDirection'])) {
+            $this->mediaAlbumRepository->setAssetsOrderDirection($this->settings['album']['assets']['orderDirection']);
+        }
+
+        // Settings
         $frameworkSettings = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK,
             'fsmediagallery',
@@ -131,28 +162,6 @@ class MediaAlbumController extends ActionController
             $this->settings['random']['thumb']['resizeMode'] = '';
         }
 
-        $this->arguments = GeneralUtility::makeInstance(Arguments::class);
-    }
-
-    /**
-     * Injects the MediaAlbumRepository
-     */
-    public function injectMediaAlbumRepository(
-        MediaAlbumRepository $mediaAlbumRepository
-    ) {
-        $this->mediaAlbumRepository = $mediaAlbumRepository;
-        if (!empty($this->settings['allowedAssetMimeTypes'])) {
-            $this->mediaAlbumRepository->setAllowedAssetMimeTypes(GeneralUtility::trimExplode(
-                ',',
-                $this->settings['allowedAssetMimeTypes']
-            ));
-        }
-        if (isset($this->settings['album']['assets']['orderBy'])) {
-            $this->mediaAlbumRepository->setAssetsOrderBy($this->settings['album']['assets']['orderBy']);
-        }
-        if (isset($this->settings['album']['assets']['orderDirection'])) {
-            $this->mediaAlbumRepository->setAssetsOrderDirection($this->settings['album']['assets']['orderDirection']);
-        }
     }
 
     /**
