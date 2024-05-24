@@ -1,13 +1,5 @@
 <?php
 
-/*
- * Copyright (C) 2024 Christian Racan
- * ----------------------------------------------
- * new version of sf_media_gallery for TYPO3 v12
- * The TYPO3 project - inspiring people to share!
- * ----------------------------------------------
- */
-
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Media Gallery',
     'description' => 'A media gallery based on the FAL integration of TYPO3.

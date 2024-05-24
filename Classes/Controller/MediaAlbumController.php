@@ -2,14 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * Copyright (C) 2024 Christian Racan
- * ----------------------------------------------
- * new version of sf_media_gallery for TYPO3 v12
- * The TYPO3 project - inspiring people to share!
- * ----------------------------------------------
- */
-
 namespace MiniFranske\FsMediaGallery\Controller;
 
 /***************************************************************
@@ -66,10 +58,41 @@ class MediaAlbumController extends ActionController
      *
      * @param ConfigurationManagerInterface $configurationManager Instance of the Configuration Manager
      */
-    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager)
+    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager): void
     {
         $this->configurationManager = $configurationManager;
+    }
 
+    /**
+     * Injects the MediaAlbumRepository
+     */
+    public function injectMediaAlbumRepository(MediaAlbumRepository $mediaAlbumRepository): void
+    {
+        $this->mediaAlbumRepository = $mediaAlbumRepository;
+    }
+
+    public function __construct()
+    {
+        $this->arguments = GeneralUtility::makeInstance(Arguments::class);
+    }
+
+    protected function initializeAction(): void
+    {
+        // Settings MediaAlbumRepository
+        if (!empty($this->settings['allowedAssetMimeTypes'])) {
+            $this->mediaAlbumRepository->setAllowedAssetMimeTypes(GeneralUtility::trimExplode(
+                ',',
+                $this->settings['allowedAssetMimeTypes']
+            ));
+        }
+        if (isset($this->settings['album']['assets']['orderBy'])) {
+            $this->mediaAlbumRepository->setAssetsOrderBy($this->settings['album']['assets']['orderBy']);
+        }
+        if (isset($this->settings['album']['assets']['orderDirection'])) {
+            $this->mediaAlbumRepository->setAssetsOrderDirection($this->settings['album']['assets']['orderDirection']);
+        }
+
+        // Settings
         $frameworkSettings = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK,
             'fsmediagallery',
@@ -139,28 +162,6 @@ class MediaAlbumController extends ActionController
             $this->settings['random']['thumb']['resizeMode'] = '';
         }
 
-        $this->arguments = GeneralUtility::makeInstance(Arguments::class);
-    }
-
-    /**
-     * Injects the MediaAlbumRepository
-     */
-    public function injectMediaAlbumRepository(
-        MediaAlbumRepository $mediaAlbumRepository
-    ) {
-        $this->mediaAlbumRepository = $mediaAlbumRepository;
-        if (!empty($this->settings['allowedAssetMimeTypes'])) {
-            $this->mediaAlbumRepository->setAllowedAssetMimeTypes(GeneralUtility::trimExplode(
-                ',',
-                $this->settings['allowedAssetMimeTypes']
-            ));
-        }
-        if (isset($this->settings['album']['assets']['orderBy'])) {
-            $this->mediaAlbumRepository->setAssetsOrderBy($this->settings['album']['assets']['orderBy']);
-        }
-        if (isset($this->settings['album']['assets']['orderDirection'])) {
-            $this->mediaAlbumRepository->setAssetsOrderDirection($this->settings['album']['assets']['orderDirection']);
-        }
     }
 
     /**
@@ -173,18 +174,6 @@ class MediaAlbumController extends ActionController
         $mediaAlbumsUids = GeneralUtility::trimExplode(',', $this->settings['mediaAlbumsUids'], true);
         $this->mediaAlbumRepository->setAlbumUids($mediaAlbumsUids);
         $this->mediaAlbumRepository->setUseAlbumUidsAsExclude(!empty($this->settings['useAlbumFilterAsExclude']));
-    }
-
-    /**
-     * Index Action
-     * As switchableControllerActions can be limited in EM this function
-     * is needed as default action (with no output).
-     * It is set as default action in flexform to make sure the
-     * correct tabs/fields are shown when a new plugin is added.
-     */
-    public function indexAction(): ResponseInterface
-    {
-        return $this->htmlResponse('<i>Please select a display mode in the plugin.</i>');
     }
 
     /**
