@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * (c) 2024 rc design visual concepts (rc-design.at)
- * _________________________________________________
- * The TYPO3 project - inspiring people to share!
- * _________________________________________________
- */
-
 namespace MiniFranske\FsMediaGallery\Domain\Model;
 
 /***************************************************************
@@ -48,19 +41,19 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
- * Media album.
+ * Media album
  */
 class MediaAlbum extends AbstractEntity
 {
     /**
-     * fileCollectionRepository.
+     * fileCollectionRepository
      *
      * @var FileCollectionRepository
      */
     protected $fileCollectionRepository;
 
     /**
-     * mediaAlbumRepository.
+     * mediaAlbumRepository
      *
      * @var MediaAlbumRepository
      */
@@ -93,7 +86,7 @@ class MediaAlbum extends AbstractEntity
 
     /**
      * Assets
-     * An array of File or FileReference.
+     * An array of File or FileReference
      *
      * @var array
      */
@@ -110,14 +103,14 @@ class MediaAlbum extends AbstractEntity
     protected $hidden;
 
     /**
-     * Title.
+     * Title
      *
      * @var string
      */
     protected $title;
 
     /**
-     * Description visible online.
+     * Description visible online
      *
      * @var string
      */
@@ -130,14 +123,14 @@ class MediaAlbum extends AbstractEntity
     protected $parentalbum;
 
     /**
-     * Main asset.
+     * Main asset
      *
      * @var \TYPO3\CMS\Extbase\Domain\Model\FileReference
      */
     protected $mainAsset;
 
     /**
-     * Child albums.
+     * Child albums
      *
      * @var ObjectStorage<MediaAlbum>
      */
@@ -162,7 +155,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Set allowedMimeTypes.
+     * Set allowedMimeTypes
      *
      * @param array $allowedMimeTypes
      */
@@ -172,7 +165,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Get allowedMimeTypes.
+     * Get allowedMimeTypes
      *
      * @return array $allowedMimeTypes
      */
@@ -182,7 +175,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Get assetsOrderBy.
+     * Get assetsOrderBy
      *
      * @return string
      */
@@ -192,7 +185,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Set assetsOrderBy.
+     * Set assetsOrderBy
      *
      * @param string $assetsOrderBy
      */
@@ -202,7 +195,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Get assetsOrderDirection.
+     * Get assetsOrderDirection
      *
      * @return string
      */
@@ -212,7 +205,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Set assetsOrderDirection.
+     * Set assetsOrderDirection
      *
      * @param string $assetsOrderDirection
      */
@@ -222,7 +215,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Get excludeEmptyAlbums.
+     * Get excludeEmptyAlbums
      *
      * @return bool
      */
@@ -232,7 +225,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Set excludeEmptyAlbums.
+     * Set excludeEmptyAlbums
      *
      * @param bool $excludeEmptyAlbums
      */
@@ -242,7 +235,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Set hidden.
+     * Set hidden
      *
      * @param bool $hidden
      */
@@ -252,7 +245,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Get hidden.
+     * Get hidden
      *
      * @return bool
      */
@@ -262,7 +255,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Returns the title.
+     * Returns the title
      *
      * @return string $title
      */
@@ -272,7 +265,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Sets the title.
+     * Sets the title
      *
      * @param string $title
      */
@@ -282,7 +275,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Returns the webdescription.
+     * Returns the webdescription
      *
      * @return string $webdescription
      */
@@ -292,7 +285,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Sets the webdescription.
+     * Sets the webdescription
      *
      * @param string $webdescription
      */
@@ -302,15 +295,15 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Set parentalbum.
+     * Set parentalbum
      */
-    public function setParentalbum(self $parentalbum): void
+    public function setParentalbum(MediaAlbum $parentalbum)
     {
         $this->parentalbum = $parentalbum;
     }
 
     /**
-     * Get parentalbum.
+     * Get parentalbum
      *
      * @return MediaAlbum
      */
@@ -356,10 +349,9 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Get asset by uid.
+     * Get asset by uid
      *
      * @param int $assetUid
-     *
      * @return File|FileReference|null
      */
     public function getAssetByUid($assetUid)
@@ -374,10 +366,9 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Get pevious, current and next asset by assetUid.
+     * Get pevious, current and next asset by assetUid
      *
      * @param $assetUid
-     *
      * @return FileInterface[]
      */
     public function getPreviousCurrentAndNext($assetUid)
@@ -402,7 +393,6 @@ class MediaAlbum extends AbstractEntity
 
     /**
      * @return array
-     *
      * @deprecated Will be removed in next major version 2.*
      */
     public function getAssetsUids()
@@ -410,14 +400,14 @@ class MediaAlbum extends AbstractEntity
         trigger_error('MediaAlbum::getAssetsUid is deprecated and will be removed with next major version 2.*. Use getAssets() as this method can not handle static file collections', E_USER_DEPRECATED);
         $assetsUids = [];
         foreach ($this->getAssets() as $asset) {
-            /* @var $asset FileInterface */
+            /** @var $asset FileInterface */
             $assetsUids[] = $asset->getUid();
         }
         return $assetsUids;
     }
 
     /**
-     * Get assetsCount.
+     * Get assetsCount
      *
      * @return int
      */
@@ -430,7 +420,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Get child albums.
+     * Get child albums
      *
      * @return ObjectStorage<MediaAlbum>>
      */
@@ -443,7 +433,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Get random child album.
+     * Get random child album
      *
      * @return MediaAlbum
      */
@@ -487,7 +477,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Get datetime.
+     * Get datetime
      *
      * @return DateTime
      */
@@ -497,7 +487,7 @@ class MediaAlbum extends AbstractEntity
     }
 
     /**
-     * Set date time.
+     * Set date time
      *
      * @param DateTime $datetime datetime
      */
@@ -508,9 +498,8 @@ class MediaAlbum extends AbstractEntity
 
     /**
      * @param FileInterface[] $files
-     * @param string          $orderBy
-     * @param string          $direction
-     *
+     * @param string $orderBy
+     * @param string $direction
      * @return FileInterface[]
      */
     protected function orderAssets($files, $orderBy, $direction)

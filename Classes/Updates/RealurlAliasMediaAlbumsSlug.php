@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * (c) 2024 rc design visual concepts (rc-design.at)
- * _________________________________________________
- * The TYPO3 project - inspiring people to share!
- * _________________________________________________
- */
-
 namespace MiniFranske\FsMediaGallery\Updates;
 
 /*
@@ -30,7 +23,7 @@ use TYPO3\CMS\Install\Updates\DatabaseUpdatedPrerequisite;
 use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
 /**
- * Migrate EXT:realurl unique alias into album slugs.
+ * Migrate EXT:realurl unique alias into album slugs
  *
  * If a lot of similar titles are used it might be a good an idea
  * to migrate the unique aliases from realurl to be sure that the same alias is used
@@ -41,9 +34,7 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
  */
 class RealurlAliasMediaAlbumsSlug implements UpgradeWizardInterface
 {
-    /**
-     * @var SlugService
-     */
+    /** @var SlugService */
     protected $slugService;
 
     public function __construct()
@@ -52,7 +43,7 @@ class RealurlAliasMediaAlbumsSlug implements UpgradeWizardInterface
     }
 
     /**
-     * Get title.
+     * Get title
      *
      * @return string
      */
@@ -62,7 +53,7 @@ class RealurlAliasMediaAlbumsSlug implements UpgradeWizardInterface
     }
 
     /**
-     * Get description.
+     * Get description
      *
      * @return string Longer description of this updater
      */
@@ -87,7 +78,7 @@ class RealurlAliasMediaAlbumsSlug implements UpgradeWizardInterface
     }
 
     /**
-     * Checks if an update is needed.
+     * Checks if an update is needed
      *
      * @return bool Whether an update is needed (TRUE) or not (FALSE)
      */
@@ -102,8 +93,7 @@ class RealurlAliasMediaAlbumsSlug implements UpgradeWizardInterface
     }
 
     /**
-     * Performs the database update.
-     *
+     * Performs the database update
      * @return bool
      */
     public function executeUpdate(): bool

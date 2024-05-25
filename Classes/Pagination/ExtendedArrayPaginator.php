@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * (c) 2024 rc design visual concepts (rc-design.at)
- * _________________________________________________
- * The TYPO3 project - inspiring people to share!
- * _________________________________________________
- */
-
 namespace MiniFranske\FsMediaGallery\Pagination;
 
 use TYPO3\CMS\Core\Pagination\AbstractPaginator;
@@ -33,7 +26,7 @@ class ExtendedArrayPaginator extends AbstractPaginator
     }
 
     /**
-     * @return array|iterable
+     * @return iterable|array
      */
     public function getPaginatedItems(): iterable
     {

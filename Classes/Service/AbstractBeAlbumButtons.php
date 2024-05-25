@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * (c) 2024 rc design visual concepts (rc-design.at)
- * _________________________________________________
- * The TYPO3 project - inspiring people to share!
- * _________________________________________________
- */
-
 namespace MiniFranske\FsMediaGallery\Service;
 
 /***************************************************************
@@ -53,7 +46,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 abstract class AbstractBeAlbumButtons
 {
     /**
-     * Generate album add/edit buttons for click menu or toolbar.
+     * Generate album add/edit buttons for click menu or toolbar
      */
     protected function generateButtons(string $combinedIdentifier): array
     {
@@ -155,7 +148,7 @@ abstract class AbstractBeAlbumButtons
     }
 
     /**
-     * Build Add new media album url.
+     * Build Add new media album url
      */
     protected function buildAddUrl(int $pid, int $parentAlbumUid, Folder $folder): Uri
     {
@@ -191,7 +184,7 @@ abstract class AbstractBeAlbumButtons
     }
 
     /**
-     * Get language string.
+     * Get language string
      */
     protected function sL(string $key, string $languageFile = 'LLL:EXT:fs_media_gallery/Resources/Private/Language/locallang_be.xlf'): string
     {

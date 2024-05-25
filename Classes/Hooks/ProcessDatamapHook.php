@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * (c) 2024 rc design visual concepts (rc-design.at)
- * _________________________________________________
- * The TYPO3 project - inspiring people to share!
- * _________________________________________________
- */
-
 namespace MiniFranske\FsMediaGallery\Hooks;
 
 /***************************************************************
@@ -38,16 +31,16 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 
 /**
- * Hooks called after sys_file_collection is added/updated/deleted.
+ * Hooks called after sys_file_collection is added/updated/deleted
  */
 class ProcessDatamapHook
 {
     /**
-     * Trigger updateFolderTree after change in sys_file_collection.
+     * Trigger updateFolderTree after change in sys_file_collection
      *
      * @param string $status
      * @param string $table
-     * @param        $id
+     * @param $id
      */
     public function processDatamap_afterDatabaseOperations(
         $status,
@@ -62,11 +55,11 @@ class ProcessDatamapHook
     }
 
     /**
-     * Trigger updateFolderTree after a sys_file_collection record is deleted.
+     * Trigger updateFolderTree after a sys_file_collection record is deleted
      *
      * @param string $command
      * @param string $table
-     * @param int    $id
+     * @param int $id
      */
     public function processCmdmap_postProcess(
         $command,

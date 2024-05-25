@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * (c) 2024 rc design visual concepts (rc-design.at)
- * _________________________________________________
- * The TYPO3 project - inspiring people to share!
- * _________________________________________________
- */
-
 namespace MiniFranske\FsMediaGallery\ViewHelpers;
 
 /***************************************************************
@@ -42,7 +35,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 
 /**
- * File title viewHelper.
+ * File title viewHelper
  */
 class FileTitleViewHelper extends AbstractViewHelper
 {
@@ -58,12 +51,11 @@ class FileTitleViewHelper extends AbstractViewHelper
     }
 
     /**
-     * Get title of a File.
+     * Get title of a File
      *
-     * @param array                     $arguments
-     * @param Closure                   $renderChildrenClosure
+     * @param array $arguments
+     * @param Closure $renderChildrenClosure
      * @param RenderingContextInterface $renderingContext
-     *
      * @return string
      */
     public static function renderStatic(array $arguments, Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)

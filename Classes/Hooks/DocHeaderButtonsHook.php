@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * (c) 2024 rc design visual concepts (rc-design.at)
- * _________________________________________________
- * The TYPO3 project - inspiring people to share!
- * _________________________________________________
- */
-
 namespace MiniFranske\FsMediaGallery\Hooks;
 
 /***************************************************************
@@ -42,7 +35,7 @@ use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Hook to add extra button to DocHeaderButtons in file list.
+ * Hook to add extra button to DocHeaderButtons in file list
  */
 class DocHeaderButtonsHook extends AbstractBeAlbumButtons
 {
@@ -56,7 +49,7 @@ class DocHeaderButtonsHook extends AbstractBeAlbumButtons
     }
 
     /**
-     * Add media album buttons to file list.
+     * Add media album buttons to file list
      */
     public function moduleTemplateDocHeaderGetButtons(array $params, ButtonBar $buttonBar): array
     {
