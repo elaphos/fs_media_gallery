@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * (c) 2024 rc design visual concepts (rc-design.at)
- * _________________________________________________
- * The TYPO3 project - inspiring people to share!
- * _________________________________________________
- */
-
 namespace MiniFranske\FsMediaGallery\Controller;
 
 /***************************************************************
@@ -54,21 +47,52 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
 
 /**
- * MediaAlbumController.
+ * MediaAlbumController
  */
 class MediaAlbumController extends ActionController
 {
     protected MediaAlbumRepository $mediaAlbumRepository;
 
     /**
-     * Injects the Configuration Manager.
+     * Injects the Configuration Manager
      *
      * @param ConfigurationManagerInterface $configurationManager Instance of the Configuration Manager
      */
     public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager): void
     {
         $this->configurationManager = $configurationManager;
+    }
 
+    /**
+     * Injects the MediaAlbumRepository
+     */
+    public function injectMediaAlbumRepository(MediaAlbumRepository $mediaAlbumRepository): void
+    {
+        $this->mediaAlbumRepository = $mediaAlbumRepository;
+    }
+
+    public function __construct()
+    {
+        $this->arguments = GeneralUtility::makeInstance(Arguments::class);
+    }
+
+    protected function initializeAction(): void
+    {
+        // Settings MediaAlbumRepository
+        if (!empty($this->settings['allowedAssetMimeTypes'])) {
+            $this->mediaAlbumRepository->setAllowedAssetMimeTypes(GeneralUtility::trimExplode(
+                ',',
+                $this->settings['allowedAssetMimeTypes']
+            ));
+        }
+        if (isset($this->settings['album']['assets']['orderBy'])) {
+            $this->mediaAlbumRepository->setAssetsOrderBy($this->settings['album']['assets']['orderBy']);
+        }
+        if (isset($this->settings['album']['assets']['orderDirection'])) {
+            $this->mediaAlbumRepository->setAssetsOrderDirection($this->settings['album']['assets']['orderDirection']);
+        }
+
+        // Settings
         $frameworkSettings = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK,
             'fsmediagallery',
@@ -138,28 +162,6 @@ class MediaAlbumController extends ActionController
             $this->settings['random']['thumb']['resizeMode'] = '';
         }
 
-        $this->arguments = GeneralUtility::makeInstance(Arguments::class);
-    }
-
-    /**
-     * Injects the MediaAlbumRepository.
-     */
-    public function injectMediaAlbumRepository(
-        MediaAlbumRepository $mediaAlbumRepository
-    ): void {
-        $this->mediaAlbumRepository = $mediaAlbumRepository;
-        if (!empty($this->settings['allowedAssetMimeTypes'])) {
-            $this->mediaAlbumRepository->setAllowedAssetMimeTypes(GeneralUtility::trimExplode(
-                ',',
-                $this->settings['allowedAssetMimeTypes']
-            ));
-        }
-        if (isset($this->settings['album']['assets']['orderBy'])) {
-            $this->mediaAlbumRepository->setAssetsOrderBy($this->settings['album']['assets']['orderBy']);
-        }
-        if (isset($this->settings['album']['assets']['orderDirection'])) {
-            $this->mediaAlbumRepository->setAssetsOrderDirection($this->settings['album']['assets']['orderDirection']);
-        }
     }
 
     /**
@@ -175,20 +177,8 @@ class MediaAlbumController extends ActionController
     }
 
     /**
-     * Index Action
-     * As switchableControllerActions can be limited in EM this function
-     * is needed as default action (with no output).
-     * It is set as default action in flexform to make sure the
-     * correct tabs/fields are shown when a new plugin is added.
-     */
-    public function indexAction(): ResponseInterface
-    {
-        return $this->htmlResponse('<i>Please select a display mode in the plugin.</i>');
-    }
-
-    /**
      * NestedList Action
-     * Displays a (nested) list of albums; default/show action in fs_media_gallery <= 1.0.0.
+     * Displays a (nested) list of albums; default/show action in fs_media_gallery <= 1.0.0
      *
      * @param int $mediaAlbum (this is not directly mapped to an object to handle 404 on our own)
      */
@@ -208,7 +198,7 @@ class MediaAlbumController extends ActionController
             }
         }
 
-        /*
+        /**
          * No album selected and album restriction set, find all "root" albums
          * Albums without parent or with parent not selected as allowed
          */
@@ -286,7 +276,7 @@ class MediaAlbumController extends ActionController
 
     /**
      * FlatList Action
-     * Displays a (one-dimensional, flattened) list of albums.
+     * Displays a (one-dimensional, flattened) list of albums
      *
      * @param int $mediaAlbum (this is not directly mapped to an object to handle 404 on our own)
      */
@@ -341,10 +331,9 @@ class MediaAlbumController extends ActionController
     }
 
     /**
-     * Show single Album Action.
+     * Show single Album Action
      *
      * @param int|null $mediaAlbum (this is not directly mapped to an object to handle 404 on our own)
-     *
      * @return ResponseInterface
      */
     public function showAlbumAction(int $mediaAlbum = null): ResponseInterface
@@ -369,7 +358,7 @@ class MediaAlbumController extends ActionController
     }
 
     /**
-     * Show single media asset from album.
+     * Show single media asset from album
      *
      * @throws ImmediateResponseException
      */
@@ -398,7 +387,7 @@ class MediaAlbumController extends ActionController
     }
 
     /**
-     * Show random media asset.
+     * Show random media asset
      */
     public function randomAssetAction(): ResponseInterface
     {
@@ -412,9 +401,9 @@ class MediaAlbumController extends ActionController
 
     /**
      * If there were validation errors, we don't want to write details like
-     * "An error occurred while trying to call Tx_Community_Controller_UserController->updateAction()".
+     * "An error occurred while trying to call Tx_Community_Controller_UserController->updateAction()"
      *
-     * @return bool|string The flash message or FALSE if no flash message should be set
+     * @return string|bool The flash message or FALSE if no flash message should be set
      */
     protected function getErrorFlashMessage(): bool
     {
@@ -422,7 +411,7 @@ class MediaAlbumController extends ActionController
     }
 
     /**
-     * Page not found wrapper.
+     * Page not found wrapper
      *
      * @throws ImmediateResponseException
      */

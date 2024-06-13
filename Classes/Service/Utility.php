@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * (c) 2024 rc design visual concepts (rc-design.at)
- * _________________________________________________
- * The TYPO3 project - inspiring people to share!
- * _________________________________________________
- */
-
 namespace MiniFranske\FsMediaGallery\Service;
 
 /***************************************************************
@@ -47,12 +40,12 @@ use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Utility class.
+ * Utility class
  */
 class Utility implements SingletonInterface
 {
     /**
-     * Get storage folders marked as media gallery.
+     * Get storage folders marked as media gallery
      *
      * @return array
      */
@@ -91,7 +84,7 @@ class Utility implements SingletonInterface
     }
 
     /**
-     * Clear pageCache defined at the storage of the collection/album.
+     * Clear pageCache defined at the storage of the collection/album
      */
     public function clearMediaGalleryPageCache(FolderInterface $folder): void
     {
@@ -122,7 +115,7 @@ class Utility implements SingletonInterface
     }
 
     /**
-     * Gets the first parentCollections of the given folder and mediaFolderUid(storagepid).
+     * Gets the first parentCollections of the given folder and mediaFolderUid(storagepid)
      */
     public function getFirstParentCollections(Folder $folder, int $mediaFolderUid): array
     {
@@ -148,7 +141,7 @@ class Utility implements SingletonInterface
     }
 
     /**
-     * Update file_collection record after move/rename folder.
+     * Update file_collection record after move/rename folder
      */
     public function updateFolderRecord(int $oldStorageUid, string $oldIdentifier, int $newStorageUid, string $newIdentifier, ?int $newParentAlbum = 0): void
     {
@@ -174,9 +167,9 @@ class Utility implements SingletonInterface
     }
 
     /**
-     * Delete file_collection when folder is deleted.
+     * Delete file_collection when folder is deleted
      *
-     * @param int    $storageUid
+     * @param int $storageUid
      * @param string $identifier
      */
     public function deleteFolderRecord($storageUid, $identifier): void
@@ -193,13 +186,13 @@ class Utility implements SingletonInterface
     }
 
     /**
-     * Creates a folderRecord (sys_file_collection).
+     * Creates a folderRecord (sys_file_collection)
      *
-     * @param string $title                The title of the folder(album_name)
-     * @param int    $collectionStoragePid The pid of the collection/mediaStorage
-     * @param int    $storageUid           The uid of the storage (fileStorage)
-     * @param string $identifier           The identifier of the folder
-     * @param int    $parentAlbum          The uid of the parentAlbum
+     * @param string $title The title of the folder(album_name)
+     * @param int $collectionStoragePid The pid of the collection/mediaStorage
+     * @param int $storageUid The uid of the storage (fileStorage)
+     * @param string $identifier The identifier of the folder
+     * @param int $parentAlbum The uid of the parentAlbum
      */
     public function createFolderRecord($title, $collectionStoragePid, $storageUid, $identifier, $parentAlbum = 0): void
     {

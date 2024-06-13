@@ -1,14 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
-/*
- * (c) 2024 rc design visual concepts (rc-design.at)
- * _________________________________________________
- * The TYPO3 project - inspiring people to share!
- * _________________________________________________
- */
-
 defined('TYPO3') || die('not TYPO3 env');
 
 $GLOBALS['TCA']['pages']['ctrl']['typeicon_classes']['contains-mediagal'] =

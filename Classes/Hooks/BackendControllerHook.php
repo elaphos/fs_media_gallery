@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * (c) 2024 rc design visual concepts (rc-design.at)
- * _________________________________________________
- * The TYPO3 project - inspiring people to share!
- * _________________________________________________
- */
-
 namespace MiniFranske\FsMediaGallery\Hooks;
 
 /***************************************************************
@@ -40,12 +33,12 @@ use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * This class adds Filelist related JavaScript to the backend.
+ * This class adds Filelist related JavaScript to the backend
  */
 class BackendControllerHook
 {
     /**
-     * Adds Filelist JavaScript used e.g. by context menu.
+     * Adds Filelist JavaScript used e.g. by context menu
      */
     public function addJavaScript(array $configuration, BackendController $backendController): void
     {

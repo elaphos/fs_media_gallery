@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * (c) 2024 rc design visual concepts (rc-design.at)
- * _________________________________________________
- * The TYPO3 project - inspiring people to share!
- * _________________________________________________
- */
-
 namespace MiniFranske\FsMediaGallery\ViewHelpers\Embed;
 
 /*                                                                        *
@@ -35,7 +28,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 class JavaScriptViewHelper extends AbstractViewHelper
 {
     /**
-     * Initialize arguments.
+     * Initialize arguments
      */
     public function initializeArguments(): void
     {
@@ -52,7 +45,7 @@ class JavaScriptViewHelper extends AbstractViewHelper
     }
 
     /**
-     * Renders child nodes as inline JavaScript content or adds it to page footer.
+     * Renders child nodes as inline JavaScript content or adds it to page footer
      *
      * @return string The rendered script content; if moveToFooter is TRUE the script content is added by PageRenderer->addJsFooterInlineCode() and an empty string is returned
      */
@@ -88,7 +81,7 @@ class JavaScriptViewHelper extends AbstractViewHelper
     }
 
     /**
-     * String 'FE' if in FrontendApplication, 'BE' otherwise (also in CLI without request object).
+     * String 'FE' if in FrontendApplication, 'BE' otherwise (also in CLI without request object)
      *
      * @internal
      */

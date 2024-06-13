@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * (c) 2024 rc design visual concepts (rc-design.at)
- * _________________________________________________
- * The TYPO3 project - inspiring people to share!
- * _________________________________________________
- */
-
 namespace MiniFranske\FsMediaGallery\Domain\Repository;
 
 /***************************************************************
@@ -42,7 +35,7 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
- * MediaAlbumRepository.
+ * MediaAlbumRepository
  */
 class MediaAlbumRepository extends Repository
 {
@@ -80,7 +73,7 @@ class MediaAlbumRepository extends Repository
     protected $assetsOrderDirection = 'asc';
 
     /**
-     * Set allowedAssetMimeTypes.
+     * Set allowedAssetMimeTypes
      *
      * @param array $allowedAssetMimeTypes
      */
@@ -90,7 +83,7 @@ class MediaAlbumRepository extends Repository
     }
 
     /**
-     * Get allowedAssetMimeTypes.
+     * Get allowedAssetMimeTypes
      *
      * @return array $allowedAssetMimeTypes
      */
@@ -100,7 +93,7 @@ class MediaAlbumRepository extends Repository
     }
 
     /**
-     * Get allowedAlbumUids.
+     * Get allowedAlbumUids
      *
      * @return array
      */
@@ -110,7 +103,7 @@ class MediaAlbumRepository extends Repository
     }
 
     /**
-     * Set allowedAlbumUids.
+     * Set allowedAlbumUids
      *
      * @param array $albumUids
      */
@@ -120,7 +113,7 @@ class MediaAlbumRepository extends Repository
     }
 
     /**
-     * Get useAlbumUidsAsExclude.
+     * Get useAlbumUidsAsExclude
      *
      * @return bool
      */
@@ -130,7 +123,7 @@ class MediaAlbumRepository extends Repository
     }
 
     /**
-     * Set useAlbumUidsAsExclude.
+     * Set useAlbumUidsAsExclude
      *
      * @param bool $useAlbumUidsAsExclude
      */
@@ -140,7 +133,7 @@ class MediaAlbumRepository extends Repository
     }
 
     /**
-     * Get assetsOrderBy.
+     * Get assetsOrderBy
      *
      * @return string
      */
@@ -150,7 +143,7 @@ class MediaAlbumRepository extends Repository
     }
 
     /**
-     * Set assetsOrderBy.
+     * Set assetsOrderBy
      *
      * @param string $assetsOrderBy
      */
@@ -160,7 +153,7 @@ class MediaAlbumRepository extends Repository
     }
 
     /**
-     * Get assetsOrderDirection.
+     * Get assetsOrderDirection
      *
      * @return string
      */
@@ -170,7 +163,7 @@ class MediaAlbumRepository extends Repository
     }
 
     /**
-     * Set assetsOrderDirection.
+     * Set assetsOrderDirection
      *
      * @param string $assetsOrderDirection
      */
@@ -180,10 +173,9 @@ class MediaAlbumRepository extends Repository
     }
 
     /**
-     * Get random sub album.
+     * Get random sub album
      *
-     * @param bool|MediaAlbum $parent parent MediaAlbum, FALSE for parent = 0 or NULL for no restriction by parent
-     *
+     * @param MediaAlbum|bool $parent parent MediaAlbum, FALSE for parent = 0 or NULL for no restriction by parent
      * @return MediaAlbum|null
      */
     public function findRandom($parent = null)
@@ -230,16 +222,14 @@ class MediaAlbumRepository extends Repository
     }
 
     /**
-     * Find albums by parent album.
+     * Find albums by parent album
      *
      * @param MediaAlbum|null $parentAlbum
-     * @param bool            $excludeEmptyAlbums
-     * @param string          $orderBy            Sort albums by: datetime|crdate|sorting
-     * @param string          $orderDirection     Sort order: asc|desc
-     *
-     * @throws InvalidQueryException
-     *
+     * @param bool $excludeEmptyAlbums
+     * @param string $orderBy Sort albums by: datetime|crdate|sorting
+     * @param string $orderDirection Sort order: asc|desc
      * @return MediaAlbum[]
+     * @throws InvalidQueryException
      */
     public function findByParentAlbum(
         MediaAlbum $parentAlbum = null,
@@ -265,7 +255,7 @@ class MediaAlbumRepository extends Repository
         $mediaAlbums = $query->execute()->toArray();
 
         foreach ($mediaAlbums as $key => $mediaAlbum) {
-            /* @var $mediaAlbum MediaAlbum */
+            /** @var $mediaAlbum MediaAlbum */
             // set allowed asset mime types
             $mediaAlbum->setAllowedMimeTypes($this->allowedAssetMimeTypes);
             // set assets order
@@ -290,11 +280,10 @@ class MediaAlbumRepository extends Repository
     }
 
     /**
-     * Find album by Uid.
+     * Find album by Uid
      *
-     * @param int  $uid            The identifier of the MediaAlbum to find
+     * @param int $uid The identifier of the MediaAlbum to find
      * @param bool $respectStorage possibility to disable storage restriction
-     *
      * @return MediaAlbum|null The matching media album if found, otherwise NULL
      */
     public function findByUid($uid, $respectStorage = true)
@@ -331,12 +320,11 @@ class MediaAlbumRepository extends Repository
     }
 
     /**
-     * Find all albums.
+     * Find all albums
      *
-     * @param bool   $excludeEmptyAlbums
-     * @param string $orderBy            Sort albums by: datetime|crdate|sorting
-     * @param string $orderDirection     Sort order: asc|desc
-     *
+     * @param bool $excludeEmptyAlbums
+     * @param string $orderBy Sort albums by: datetime|crdate|sorting
+     * @param string $orderDirection Sort order: asc|desc
      * @return MediaAlbum[]
      */
     public function findAll($excludeEmptyAlbums = true, $orderBy = 'datetime', $orderDirection = 'desc')
@@ -357,7 +345,7 @@ class MediaAlbumRepository extends Repository
         $mediaAlbums = $query->execute()->toArray();
 
         foreach ($mediaAlbums as $key => $mediaAlbum) {
-            /* @var $mediaAlbum MediaAlbum */
+            /** @var $mediaAlbum MediaAlbum */
             // set allowed asset mime types
             $mediaAlbum->setAllowedMimeTypes($this->allowedAssetMimeTypes);
             // set assets order
@@ -388,9 +376,8 @@ class MediaAlbumRepository extends Repository
      *  'bar' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING
      * )
      *
-     * @param string $orderBy        Sort albums by: datetime|crdate|sorting
+     * @param string $orderBy Sort albums by: datetime|crdate|sorting
      * @param string $orderDirection Sort order: asc|desc
-     *
      * @return array Orderings settings used by \TYPO3\CMS\Extbase\Persistence\QueryInterface->setOrderings()
      */
     protected function getOrderingsSettings($orderBy = 'sorting', $orderDirection = 'asc')

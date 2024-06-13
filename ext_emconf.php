@@ -1,14 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
-/*
- * (c) 2024 rc design visual concepts (rc-design.at)
- * _________________________________________________
- * The TYPO3 project - inspiring people to share!
- * _________________________________________________
- */
-
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Media Gallery',
     'description' => 'A media gallery based on the FAL integration of TYPO3.

@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * (c) 2024 rc design visual concepts (rc-design.at)
- * _________________________________________________
- * The TYPO3 project - inspiring people to share!
- * _________________________________________________
- */
-
 namespace MiniFranske\FsMediaGallery\Hooks;
 
 /*                                                                        *
@@ -25,12 +18,12 @@ use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * ItemsProcFuncHook.
+ * ItemsProcFuncHook
  */
 class ItemsProcFuncHook
 {
     /**
-     * Sets the available actions for settings.switchableControllerActions.
+     * Sets the available actions for settings.switchableControllerActions
      */
     public function getItemsForSwitchableControllerActions(array &$config): void
     {
@@ -68,7 +61,7 @@ class ItemsProcFuncHook
     }
 
     /**
-     * Sets the available options for settings.list.orderBy.
+     * Sets the available options for settings.list.orderBy
      */
     public function getItemsForListOrderBy(array &$config): void
     {
@@ -93,7 +86,7 @@ class ItemsProcFuncHook
     }
 
     /**
-     * Sets the available options for settings.album.assets.orderBy.
+     * Sets the available options for settings.album.assets.orderBy
      */
     public function getItemsForAssetsOrderBy(array &$config): void
     {
@@ -128,7 +121,7 @@ class ItemsProcFuncHook
     }
 
     /**
-     * Get extension configuration.
+     * Get extension configuration
      */
     protected function getExtensionConfiguration()
     {
