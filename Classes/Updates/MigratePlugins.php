@@ -76,9 +76,6 @@ final class MigratePlugins implements UpgradeWizardInterface
         return [];
     }
 
-    /**
-     * @return int
-     */
     private function getContentElementCount(): int
     {
         try {
@@ -97,9 +94,6 @@ final class MigratePlugins implements UpgradeWizardInterface
         return 0;
     }
 
-    /**
-     * @return array
-     */
     private function getContentElements(): array
     {
         try {
@@ -118,10 +112,6 @@ final class MigratePlugins implements UpgradeWizardInterface
         return [];
     }
 
-    /**
-     * @param array $flexFormArray
-     * @return string
-     */
     private function getFirstControllerActionFromFlexform(array $flexFormArray): string
     {
         $controllerActions = explode(';', $flexFormArray['data']['general']['lDEF']['switchableControllerActions']['vDEF'] ?? '');
@@ -133,12 +123,6 @@ final class MigratePlugins implements UpgradeWizardInterface
         return '';
     }
 
-    /**
-     * @param int $uid
-     * @param string $listType
-     * @param string $piFlexform
-     * @return bool
-     */
     private function updateContentElement(int $uid, string $listType, string $piFlexform): bool
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tt_content');
