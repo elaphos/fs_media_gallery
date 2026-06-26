@@ -141,7 +141,7 @@ class FsMediaGalleryProvider extends AbstractProvider
         $itemInfo = $this->itemsConfiguration[$itemName] ?? [];
 
         return [
-            'data-callback-module' => 'TYPO3/CMS/FsMediaGallery/ContextMenuActions',
+            'data-callback-module' => '@minifranske/fs-media-gallery/context-menu-actions',
             'data-album-record-uid' => $itemInfo['uid'] ?? 0,
             'data-pid' => $itemInfo['pid'] ?? 0,
             'data-parent-uid' => $itemInfo['parentUid'] ?? 0,
