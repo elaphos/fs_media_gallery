@@ -97,6 +97,10 @@ $additionalColumns = [
                 'fields' => ['title'],
                 'fieldSeparator' => '/',
                 'prefixParentPageSlug' => false,
+                // Verschachtelte Alben: Slug = Pfad aller Eltern-Alben (opa/eltern/kind)
+                'postModifiers' => [
+                    \MiniFranske\FsMediaGallery\Slug\SlugModifier::class . '->addParentSlug',
+                ],
             ],
             'fallbackCharacter' => '-',
             'eval' => 'uniqueInPid',
