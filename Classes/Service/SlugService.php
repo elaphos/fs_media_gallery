@@ -96,6 +96,70 @@ class SlugService
     }
 
     /**
+     * Regenerate slugs for media album records. Unlike performUpdateSlugs() this can
+     * also rebuild ALL slugs (not just empty ones), e.g. after changing the slug
+     * generation (nested parent paths via the slug postModifier).
+     *
+     * @return list<array{uid: int, old: string, new: string}> changed records
+     */
+    public function regenerateSlugs(bool $onlyEmpty = false, bool $dryRun = false): array
+    {
+        $changes = [];
+
+        /** @var Connection $connection */
+        $connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable($this->tableName);
+        $queryBuilder = $connection->createQueryBuilder();
+        $queryBuilder->getRestrictions()->removeAll();
+        $fieldConfig = $GLOBALS['TCA'][$this->tableName]['columns'][$this->slugFieldName]['config'];
+        /** @var SlugHelper $slugHelper */
+        $slugHelper = GeneralUtility::makeInstance(
+            SlugHelper::class,
+            $this->tableName,
+            $this->slugFieldName,
+            $fieldConfig
+        );
+
+        $query = $queryBuilder->select('*')->from($this->tableName);
+        if ($onlyEmpty) {
+            $query->where(
+                $queryBuilder->expr()->or(
+                    $queryBuilder->expr()->eq(
+                        $this->slugFieldName,
+                        $queryBuilder->createNamedParameter('')
+                    ),
+                    $queryBuilder->expr()->isNull($this->slugFieldName)
+                )
+            );
+        }
+        $statement = $query->executeQuery();
+
+        while ($record = $statement->fetchAssociative()) {
+            $old = (string)($record[$this->slugFieldName] ?? '');
+            $new = $slugHelper->generate($record, (int)$record['pid']);
+            if ($new === $old) {
+                continue;
+            }
+
+            $changes[] = ['uid' => (int)$record['uid'], 'old' => $old, 'new' => $new];
+
+            if (!$dryRun) {
+                $updateQueryBuilder = $connection->createQueryBuilder();
+                $updateQueryBuilder->update($this->tableName)
+                    ->where(
+                        $updateQueryBuilder->expr()->eq(
+                            'uid',
+                            $updateQueryBuilder->createNamedParameter($record['uid'], Connection::PARAM_INT)
+                        )
+                    )
+                    ->set($this->slugFieldName, $new)
+                    ->executeStatement();
+            }
+        }
+
+        return $changes;
+    }
+
+    /**
      * Count valid entries from EXT:realurl table tx_realurl_uniqalias which can be migrated
      * Checks also for existance of third party extension table 'tx_realurl_uniqalias'
      * EXT:realurl requires not to be installed
