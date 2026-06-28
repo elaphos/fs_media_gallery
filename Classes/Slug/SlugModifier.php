@@ -89,6 +89,8 @@ class SlugModifier
         $tableName = $this->toString($this->configuration['tableName'] ?? 'sys_file_collection');
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable($tableName);
+        // Eltern-Album unabhaengig von hidden/starttime etc. finden (Pfad-Aufbau).
+        $queryBuilder->getRestrictions()->removeAll();
         $row = $queryBuilder
             ->select('title', 'parentalbum')
             ->from($tableName)
