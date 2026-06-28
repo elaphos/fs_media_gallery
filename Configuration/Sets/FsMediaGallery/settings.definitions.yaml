@@ -1,0 +1,37 @@
+# Spiegelt die TypoScript-Constants aus Configuration/TypoScript/constants.typoscript
+# als Set-Settings, damit das importierte Setup die {$...} aufloesen kann.
+# Werte = Original-Defaults der Extension. label ist Pflicht, sonst wird das Set
+# deaktiviert.
+settings:
+  plugin.tx_fsmediagallery.view.templateRootPath:
+    label: 'fs_media_gallery: Template Root Path'
+    type: string
+    default: 'EXT:fs_media_gallery/Resources/Private/Templates/'
+  plugin.tx_fsmediagallery.view.partialRootPath:
+    label: 'fs_media_gallery: Partial Root Path'
+    type: string
+    default: 'EXT:fs_media_gallery/Resources/Private/Partials/'
+  plugin.tx_fsmediagallery.view.layoutRootPath:
+    label: 'fs_media_gallery: Layout Root Path'
+    type: string
+    default: 'EXT:fs_media_gallery/Resources/Private/Layouts/'
+  plugin.tx_fsmediagallery.persistence.storagePid:
+    label: 'fs_media_gallery: Default storage PID (Albumordner)'
+    type: string
+    default: ''
+  plugin.tx_fsmediagallery.persistence.recursive:
+    label: 'fs_media_gallery: Recursion level der storagePid'
+    type: string
+    default: '0'
+  plugin.tx_fsmediagallery.settings.overrideFlexformSettingsIfEmpty:
+    label: 'fs_media_gallery: Per TypoScript ueberschreibbare Felder'
+    type: string
+    default: 'list.pagination.itemsPerPage,list.thumb.width,list.thumb.height,list.thumb.resizeMode,list.thumb.random,list.hideEmptyAlbums,list.orderBy,list.orderDirection,album.pagination.itemsPerPage,album.assets.orderBy,album.assets.orderDirection,album.thumb.width,album.thumb.height,album.thumb.resizeMode,album.lightbox.enable,album.lightbox.styleClass,album.displayTitle,album.lightbox.relPrefix,detail.asset.width,detail.asset.height,detail.asset.resizeMode,random.thumb.width,random.thumb.height,random.thumb.resizeMode'
+  plugin.tx_fsmediagallery.settings.allowedAssetMimeTypes:
+    label: 'fs_media_gallery: Erlaubte Asset-MIME-Typen'
+    type: string
+    default: 'image/jpeg, image/png, image/gif, video/youtube, video/vimeo'
+  plugin.tx_fsmediagallery.settings.targetPid:
+    label: 'fs_media_gallery: Ziel-Seiten-UID fuer Random-View'
+    type: string
+    default: ''

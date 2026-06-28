@@ -1,0 +1,3 @@
+# Site Set fuer EXT:fs_media_gallery.
+# Laedt das mitgelieferte Setup; die {$...}-Constants kommen aus settings.definitions.yaml.
+@import 'EXT:fs_media_gallery/Configuration/TypoScript/setup.typoscript'
