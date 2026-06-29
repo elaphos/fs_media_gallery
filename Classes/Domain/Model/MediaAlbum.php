@@ -32,6 +32,8 @@ use Exception;
 use MiniFranske\FsMediaGallery\Domain\Repository\MediaAlbumRepository;
 use TYPO3\CMS\Core\Resource\Collection\AbstractFileCollection;
 use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Resource\Collection\FileCollectionRegistry;
 use TYPO3\CMS\Core\Resource\FileCollectionRepository;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
@@ -144,13 +146,13 @@ class MediaAlbum extends AbstractEntity
 
     public function __construct()
     {
-        $this->fileCollectionRepository = GeneralUtility::makeInstance(FileCollectionRepository::class);
+        $this->fileCollectionRepository = GeneralUtility::makeInstance(FileCollectionRepository::class, GeneralUtility::makeInstance(ConnectionPool::class), GeneralUtility::makeInstance(FileCollectionRegistry::class));
         $this->mediaAlbumRepository = GeneralUtility::makeInstance(MediaAlbumRepository::class);
     }
 
     public function initializeObject(): void
     {
-        $this->fileCollectionRepository ??= GeneralUtility::makeInstance(FileCollectionRepository::class);
+        $this->fileCollectionRepository ??= GeneralUtility::makeInstance(FileCollectionRepository::class, GeneralUtility::makeInstance(ConnectionPool::class), GeneralUtility::makeInstance(FileCollectionRegistry::class));
         $this->mediaAlbumRepository ??= GeneralUtility::makeInstance(MediaAlbumRepository::class);
     }
 

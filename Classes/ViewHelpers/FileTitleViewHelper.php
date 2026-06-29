@@ -58,9 +58,9 @@ class FileTitleViewHelper extends AbstractViewHelper
      * @param RenderingContextInterface $renderingContext
      * @return string
      */
-    public static function renderStatic(array $arguments, Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
+    public function render(): ?string
     {
-        $file = $arguments['file'];
+        $file = $this->arguments['file'];
 
         if (is_callable([$file, 'getOriginalResource'])) {
             // Get the original file from the Extbase model

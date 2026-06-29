@@ -49,9 +49,8 @@ $boot = function ($packageKey): void
         ],
     );
 
-    ExtensionManagementUtility::addPageTSConfig(
-        '@import "EXT:fs_media_gallery/Configuration/TSConfig/Page.tsconfig"'
-    );
+    // PageTSConfig wird ab TYPO3 v12 automatisch aus Configuration/page.tsconfig geladen
+    // (ExtensionManagementUtility::addPageTSConfig() ist in v14 entfernt).
 
     // refresh file tree after changen in media album recored (sys_file_collection)
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] =
