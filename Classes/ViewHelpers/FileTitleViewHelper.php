@@ -28,9 +28,7 @@ namespace MiniFranske\FsMediaGallery\ViewHelpers;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use Closure;
 use TYPO3\CMS\Core\Resource\FileInterface;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 
@@ -52,11 +50,6 @@ class FileTitleViewHelper extends AbstractViewHelper
 
     /**
      * Get title of a File
-     *
-     * @param array $arguments
-     * @param Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return string
      */
     public function render(): ?string
     {
