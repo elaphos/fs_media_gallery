@@ -18,7 +18,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
@@ -108,8 +107,13 @@ class JavaScriptViewHelper extends AbstractViewHelper
 
     private function getExtbaseRequest(): ?ServerRequestInterface
     {
-        if ($this->renderingContext instanceof RenderingContext) {
-            return $this->renderingContext->getRequest();
+        // Fluid 4 (TYPO3 v14): RenderingContext::getRequest() wurde entfernt,
+        // der Request liegt als Attribut im RenderingContext.
+        if ($this->renderingContext->hasAttribute(ServerRequestInterface::class)) {
+            $request = $this->renderingContext->getAttribute(ServerRequestInterface::class);
+            if ($request instanceof ServerRequestInterface) {
+                return $request;
+            }
         }
 
         return null;
